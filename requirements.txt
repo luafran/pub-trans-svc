@@ -2,3 +2,5 @@ tornado
 statsd
 xmltodict
 redis
+pycurl
+six
