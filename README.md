@@ -73,3 +73,11 @@ $ tox -e runservice
 $ docker-compose build
 $ docker-compose up
 ```
+
+## Use The Service
+
+### Send a request to service health
+
+```shell
+$ curl --proxy '' 'http://localhost:8888/health'
+```
