@@ -18,7 +18,7 @@ def make_app():
              {'application_settings': settings, 'handler_name': 'Health'}),
         ],
         default_handler_class=default_handler.DefaultHandler,
-        service_name='omli',
+        service_name='pubtrans',
         autoreload=settings.AUTO_RELOAD)
 
     return _the_app

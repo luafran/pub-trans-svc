@@ -8,7 +8,7 @@ UNKNOWN_VERSION = 'UNKNOWN'
 
 
 def _get_distribution_name():
-    return "omli"
+    return "pubtrans"
 
 
 def get_version():
