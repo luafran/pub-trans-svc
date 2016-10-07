@@ -1,0 +1,71 @@
+NextBus Public XML Feed
+
+http://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList
+
+v1/agencies
+
+List of Agencies
+
+Agency
+    tag
+    title
+    regionTitle
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni
+
+List of Routes
+
+Route
+    tag (id)
+    title
+    shortTitle
+
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=<route_tag>
+http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=6
+
+
+RouteConfig
+    tag (id)
+    title
+    shortTitle
+    color
+    oppositeColor
+    latMin,latMax, lonMin, lonMax
+
+    List of Stops
+    List of Directions
+    List of Paths
+
+Stop
+    tag
+    title
+    shortTitle
+    lat/lon
+    stopId
+
+Direction
+    tag
+    title
+    name
+    List of Stops
+
+Path
+    List of Point
+
+Point
+    lat
+    lon
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=<stop id>
+http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=<stop id>&routeTag=<route tag>
+
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=<agency_tag>&r=<route_tag>
+http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=sf-muni&r=6
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=messages&a=<agency_tag>&r=<route tag1>&r=<route tagN>
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=<agency_tag>&r=<route_tag>&t=<epoch time in msec>

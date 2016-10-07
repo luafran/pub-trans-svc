@@ -1,0 +1,9 @@
+Features
+
+Use entity classes instead of dicts in APIs?
+
+
+Deployment
+
+Minukube and Kubernetes
+Redis HA deployment

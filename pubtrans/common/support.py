@@ -39,7 +39,7 @@ class Support(object):
 
         if self._stats_enabled:
             self._stats_client = statsd.StatsClient(host=settings.STATS_SERVICE_HOSTNAME,
-                                                    port=8125, prefix='omli.' + environment)
+                                                    port=8125, prefix='pubtrans.' + environment)
         self._messages_queue = Queue.Queue()
         self.log_entire_request = settings.LOG_LEVEL in ['CRITICAL', 'ERROR']
 

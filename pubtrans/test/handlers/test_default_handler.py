@@ -19,22 +19,22 @@ class TestDefaultHandler(testing.AsyncHTTPTestCase):
     def get_app(self):
         return app
 
-    def test_get_notfound(self):
+    def test_get_not_found(self):
         self.http_client.fetch(self.get_url('/notfound'), self.stop, method='GET')
         response = self.wait()
         self.assertEqual(404, response.code, "Response should be 404, got %s instead" % response.code)
 
-    def test_post_notfound(self):
+    def test_post_not_found(self):
         self.http_client.fetch(self.get_url('/notfound'), self.stop, method='POST', body='')
         response = self.wait()
         self.assertEqual(404, response.code, "Response should be 404, got %s instead" % response.code)
 
-    def test_put_notfound(self):
+    def test_put_not_found(self):
         self.http_client.fetch(self.get_url('/notfound'), self.stop, method='PUT', body='')
         response = self.wait()
         self.assertEqual(404, response.code, "Response should be 404, got %s instead" % response.code)
 
-    def test_delete_notfound(self):
+    def test_delete_not_found(self):
         self.http_client.fetch(self.get_url('/notfound'), self.stop, method='DELETE')
         response = self.wait()
         self.assertEqual(404, response.code, "Response should be 404, got %s instead" % response.code)

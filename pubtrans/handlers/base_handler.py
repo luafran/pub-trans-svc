@@ -47,12 +47,12 @@ class BaseHandler(tornado.web.RequestHandler):
         self.application_settings = application_settings
         self.handler_name = handler_name
         self.request_id = self.request.headers.get(constants.REQUEST_ID_HTTP_HEADER,
-                                                   'omli-'+str(uuid.uuid4()))
+                                                   'pubtrans-'+str(uuid.uuid4()))
 
         logging.config.dictConfig(settings.LOGGING)
         logger = logging.getLogger(settings.LOGGER_NAME)
 
-        environment_name = 'OMLI_ENV'
+        environment_name = 'PUBTRANS_ENV'
 
         environment = os.environ.get(environment_name)
         if not environment:
