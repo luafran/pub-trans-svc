@@ -4,10 +4,9 @@ Tornado handler for agencies resource
 from tornado import gen
 
 from pubtrans.common import exceptions
+from pubtrans.domain import api
 from pubtrans.handlers import base_handler
 from pubtrans.services.next_bus import NextBusService
-
-TAG_AGENCIES = 'agencies'
 
 
 class AgenciesHandlerV1(base_handler.BaseHandler):
@@ -30,7 +29,7 @@ class AgenciesHandlerV1(base_handler.BaseHandler):
         if agencies is None:
             # Use service
             nextbus_service = NextBusService()
-            agencies = yield nextbus_service.get_all_agencies()
+            agencies = yield nextbus_service.get_agencies()
             try:
                 yield nextbus_repository.store_agencies(agencies)
             except exceptions.DatabaseOperationError as ex:
@@ -39,7 +38,7 @@ class AgenciesHandlerV1(base_handler.BaseHandler):
                                          format(self.handler_name, ex.message))
 
         response = {
-            TAG_AGENCIES: agencies
+            api.TAG_AGENCIES: agencies
         }
 
         self.build_response(response)

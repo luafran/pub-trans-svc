@@ -76,40 +76,4 @@ $ docker-compose up
 
 ## Use The Service
 
-### Send a request to service health
-
-```shell
-$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/health' | python -m json.tool
-{
-    "status": {
-        "details": [],
-        "health": [
-            0,
-            "OK"
-        ],
-        "service": "pubtrans",
-        "version": "0.0.1"
-    }
-}
-```
-
-### Get Agencies
-
-```shell
-$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/agencies' | python -m json.tool
-{
-    "agencies": [
-        {
-            "regionTitle": "California-Northern",
-            "tag": "actransit",
-            "title": "AC Transit"
-        },
-        ...
-        {
-            "regionTitle": "Pennsylvania",
-            "tag": "york-pa",
-            "title": "York College"
-        }
-    ]
-}
-```
+See [API documentation](doc/api.md)

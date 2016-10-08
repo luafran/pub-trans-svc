@@ -1,9 +1,37 @@
 Features
 
+COMPLETE: xml attributes in nextbus service should be constants
+Add verbose option to route detail
+
+route partial responses
+
+predictions stop id
+predictions stop id, route tag
+predictions route tag, stop tag
+predictions for multiple stops
+schedules
+messages
+routes vehicles
+
 Use entity classes instead of dicts in APIs?
+
+TEST WITH REAL CACHE!
+
+Circuit breaker in nextbus service
+Content negotiation json and xml
 
 
 Deployment
 
 Minukube and Kubernetes
 Redis HA deployment
+
+
+Design
+Don't use OrderDict?
+Element for all routes shoul be equal to element for single route, use partial responses or verbose
+Make the API support multiple agencies
+    For NextBus provider
+    For different providers
+Make the service support multiple providers like NextBus
+    agency -> provider map

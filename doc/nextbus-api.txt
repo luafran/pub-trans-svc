@@ -1,10 +1,20 @@
-NextBus Public XML Feed
+## NextBus Public XML Feed
 
 http://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf
 
+### Agencies
+
 http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList
 
-v1/agencies
+<?xml version="1.0" encoding="utf-8" ?>
+<body copyright="All data copyright agencies listed below and NextBus Inc 2016.">
+    <agency tag="actransit" title="AC Transit" regionTitle="California-Northern"/>
+    <agency tag="jhu-apl" title="APL" regionTitle="Maryland"/>
+    ...
+</body>
+
+
+/v1/agencies
 
 List of Agencies
 
@@ -13,7 +23,21 @@ Agency
     title
     regionTitle
 
+
+### Routes
+
 http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni
+
+<?xml version="1.0" encoding="utf-8" ?> 
+<body copyright="All data copyright San Francisco Muni 2016.">
+    <route tag="E" title="E-Embarcadero"/>
+    <route tag="F" title="F-Market &amp; Wharves"/>
+    <route tag="J" title="J-Church"/>
+    ... 
+</body>
+
+
+/v1/routes?a=sf-muni
 
 List of Routes
 
@@ -26,7 +50,6 @@ Route
 http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=<route_tag>
 http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=6
 
-
 RouteConfig
     tag (id)
     title
@@ -34,6 +57,7 @@ RouteConfig
     color
     oppositeColor
     latMin,latMax, lonMin, lonMax
+
 
     List of Stops
     List of Directions
@@ -59,9 +83,13 @@ Point
     lat
     lon
 
+
 http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=<stop id>
 http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=<stop id>&routeTag=<route tag>
+http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=<agency_tag>&r=<route tag>&s=<stop tag>
 
+
+http://webservices.nextbus.com/service/publicXMLFeed?command=predictionsForMultiStops&a=<agency_tag>&stops=<stop 1>&stops=<stop 2>&stops=<stop3>
 
 http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=<agency_tag>&r=<route_tag>
 http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=sf-muni&r=6
@@ -69,3 +97,5 @@ http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=sf-muni&
 http://webservices.nextbus.com/service/publicXMLFeed?command=messages&a=<agency_tag>&r=<route tag1>&r=<route tagN>
 
 http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=<agency_tag>&r=<route_tag>&t=<epoch time in msec>
+
+/routes/E/vehicles

@@ -56,11 +56,11 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
             raise gen.Return((200, self.mock_nextbus_response))
 
         @gen.coroutine
-        def get_agencies():
+        def get_items():
             raise gen.Return(None)
 
         @gen.coroutine
-        def store_agencies(agencies):  # pylint: disable=unused-argument
+        def store_items(items):  # pylint: disable=unused-argument
             raise gen.Return(None)
 
         with mock.patch.object(RestAdapter, 'get') as mocked_rest_adapter:
@@ -70,8 +70,8 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
                 method='GET'
             )
 
-            mocked_repo_get.side_effect = get_agencies
-            mocked_repo_store.side_effect = store_agencies
+            mocked_repo_get.side_effect = get_items
+            mocked_repo_store.side_effect = store_items
             self.http_client.fetch(request, self.stop)
             response = self.wait()
 
@@ -92,9 +92,9 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
                 timeout=settings.NEXTBUS_SERVICE_TIMEOUT)
 
         mocked_repo_get.assert_called_once()
-        actual_cached_agencies = mocked_repo_store.call_args_list[0][0][0]
-        self.assertEquals(2, len(actual_cached_agencies))
-        self.assertEquals(actual_cached_agencies, self.mock_nextbus_response_as_list)
+        actual_cached_items = mocked_repo_store.call_args_list[0][0][0]
+        self.assertEquals(2, len(actual_cached_items))
+        self.assertEquals(actual_cached_items, self.mock_nextbus_response_as_list)
 
         self.maxDiff = None
         self.assertEqual(expected_service_response, actual_service_response)
@@ -110,13 +110,13 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
             raise gen.Return((200, self.mock_nextbus_response))
 
         @gen.coroutine
-        def get_agencies():
+        def get_items():
             agencies = self.mock_nextbus_response_as_list
 
             raise gen.Return(agencies)
 
         @gen.coroutine
-        def store_agencies(agencies):
+        def store_items(items):  # pylint: disable=unused-argument
             raise gen.Return(None)
 
         with mock.patch.object(RestAdapter, 'get') as mocked_rest_adapter:
@@ -126,8 +126,8 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
                 method='GET'
             )
 
-            mocked_repo_get.side_effect = get_agencies
-            mocked_repo_store.side_effect = store_agencies
+            mocked_repo_get.side_effect = get_items
+            mocked_repo_store.side_effect = store_items
             self.http_client.fetch(request, self.stop)
             response = self.wait()
 

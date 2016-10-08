@@ -4,6 +4,7 @@ from tornado import testing
 from tornado.httpclient import HTTPRequest
 
 from pubtrans import application
+from pubtrans.domain import api
 
 app = application.make_app()
 
@@ -30,6 +31,9 @@ class TestNextBusAgencies(testing.AsyncHTTPTestCase):
 
         self.assertEqual(response.code, 200)
         actual_response = json.loads(response.body)
-        agencies = actual_response.get('agencies')
+        agencies = actual_response.get(api.TAG_AGENCIES)
         self.assertIsNotNone(agencies)
-        self.assertIsNotNone(agencies[0].get('tag'))
+        self.assertGreater(len(agencies), 1)
+        self.assertIsNotNone(agencies[0].get(api.TAG_TAG))
+        self.assertIsNotNone(agencies[0].get(api.TAG_TITLE))
+        self.assertIsNotNone(agencies[0].get(api.TAG_REGION_TITILE))
