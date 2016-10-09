@@ -8,6 +8,7 @@ from tornado.httpclient import HTTPRequest
 from pubtrans import application
 from pubtrans.common.rest_adapter import RestAdapter
 from pubtrans.config import settings
+from pubtrans.domain import api
 from pubtrans.repositories.redis_nextbus_repository import RedisNextBusRepository
 from pubtrans.services.next_bus import NextBusService
 
@@ -79,7 +80,7 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
         actual_service_response = json.loads(response.body)
 
         expected_service_response = {
-            "agencies": self.mock_nextbus_response_as_list
+            api.TAG_AGENCIES: self.mock_nextbus_response_as_list
         }
 
         headers = {
@@ -135,7 +136,7 @@ class TestAgenciesHandlerV1(testing.AsyncHTTPTestCase):
         actual_service_response = json.loads(response.body)
 
         expected_service_response = {
-            "agencies": self.mock_nextbus_response_as_list
+            api.TAG_AGENCIES: self.mock_nextbus_response_as_list
         }
 
         mocked_repo_get.assert_called_once()

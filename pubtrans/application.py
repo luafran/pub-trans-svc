@@ -10,6 +10,7 @@ from pubtrans.handlers import default_handler
 from pubtrans.handlers import health
 from pubtrans.handlers import agencies
 from pubtrans.handlers import routes
+from pubtrans.handlers import route_schedule
 from pubtrans.repositories import redis_nextbus_repository
 
 
@@ -19,10 +20,12 @@ def make_app():
 
     _the_app = tornado.web.Application(
         [
-            (r'.*/v1/agencies/?([^/]*)$', agencies.AgenciesHandlerV1,
+            (r'.*/v1/agencies$', agencies.AgenciesHandlerV1,
              {'application_settings': settings, 'handler_name': 'AgenciesHandlerV1'}),
             (r'.*/v1/([^/]*)/routes/?([^/]*)$', routes.RoutesHandlerV1,
              {'application_settings': settings, 'handler_name': 'RoutesHandlerV1'}),
+            (r'.*/v1/([^/]*)/routes/?([^/]*)/schedule$', route_schedule.RouteScheduleHandlerV1,
+             {'application_settings': settings, 'handler_name': 'ScheduleHandlerV1'}),
             (r'.*/health/?$', health.HealthHandler,
              {'application_settings': settings, 'handler_name': 'Health'}),
         ],

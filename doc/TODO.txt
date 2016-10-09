@@ -4,14 +4,20 @@ COMPLETE: xml attributes in nextbus service should be constants
 Add verbose option to route detail
 
 route partial responses
+schedule partial responses
 
 predictions stop id
+
 predictions stop id, route tag
 predictions route tag, stop tag
 predictions for multiple stops
-schedules
+unit tests for predictions
+
 messages
+unit tests for message
+
 routes vehicles
+unit tests for route vehicles
 
 Use entity classes instead of dicts in APIs?
 

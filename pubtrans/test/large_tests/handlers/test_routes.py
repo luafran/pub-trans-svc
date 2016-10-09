@@ -9,10 +9,10 @@ from pubtrans.domain import api
 app = application.make_app()
 
 
-class TestNextBusRoutes(testing.AsyncHTTPTestCase):
+class TestRoutes(testing.AsyncHTTPTestCase):
 
     def setUp(self):
-        super(TestNextBusRoutes, self).setUp()
+        super(TestRoutes, self).setUp()
 
     def get_app(self):
         return app
