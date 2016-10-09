@@ -2,6 +2,7 @@
 Service main function
 Tornado application and URL mappings
 """
+import signal
 import tornado.ioloop
 import tornado.web
 
@@ -12,6 +13,15 @@ from pubtrans.handlers import agencies
 from pubtrans.handlers import routes
 from pubtrans.handlers import route_schedule
 from pubtrans.repositories import redis_nextbus_repository
+
+
+def shutdown():
+    tornado.ioloop.IOLoop.current().stop()
+
+
+def sig_handler(sig, frame):  # pylint: disable=unused-argument
+    print "SIGTERM or SIGINT received"
+    tornado.ioloop.IOLoop.current().add_callback(shutdown)
 
 
 def make_app():
@@ -36,6 +46,9 @@ def make_app():
     return _the_app
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, sig_handler)
+    signal.signal(signal.SIGINT, sig_handler)
+
     APPLICATION = make_app()
     APPLICATION.listen(settings.DEFAULT_PORT)
     print "Listening at port {0}...".format(settings.DEFAULT_PORT)
