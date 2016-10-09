@@ -15,7 +15,7 @@ REQS = [str(ir.req) for ir in PACKAGE_REQS]
 if __name__ == "__main__":
     setuptools.setup(
         name="pubtrans",
-        version="0.0.1",
+        version="0.0.0",
         description="Media Location Information Service",
         author="Luciano Afranllie",
         namespace_packages=['pubtrans'],
