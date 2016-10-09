@@ -19,7 +19,7 @@ class AgenciesHandlerV1(base_handler.BaseHandler):
 
         if agencies is None:
             # Use service
-            nextbus_service = NextBusService()
+            nextbus_service = NextBusService(support=self.support)
             agencies = yield nextbus_service.get_agencies()
 
             yield self.store_agencies_in_cache(agencies)
