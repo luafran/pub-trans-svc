@@ -2,9 +2,10 @@
 Service settings
 """
 AUTO_RELOAD = True
-DEFAULT_PORT = 8888
+DEFAULT_PORT = 80
 
-REDIS_HOST = "redis"
+REDIS_MASTER_HOST = "redis-master"
+REDIS_SLAVE_HOST = "redis-slave"
 REDIS_PORT = 6379
 NEXTBUS_CACHE_TTL_SECONDS = 60
 

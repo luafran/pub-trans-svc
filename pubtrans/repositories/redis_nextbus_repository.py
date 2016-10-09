@@ -21,7 +21,7 @@ class RedisNextBusRepository(object):
 
     @gen.coroutine
     def get_agencies(self):  # pylint: disable=no-self-use
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        r_connection = self.get_redis_connection('slave')
         try:
             data = r_connection.get(KEY_AGENCIES)
         except redis.ConnectionError as ex:
@@ -40,7 +40,7 @@ class RedisNextBusRepository(object):
     @gen.coroutine
     def store_agencies(self, agencies):  # pylint: disable=no-self-use
 
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        r_connection = self.get_redis_connection('master')
 
         agencies_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
         try:
@@ -53,7 +53,9 @@ class RedisNextBusRepository(object):
 
     @gen.coroutine
     def get_routes(self, agency_tag):  # pylint: disable=no-self-use
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+
+        r_connection = self.get_redis_connection('slave')
+
         try:
             key_name = agency_tag + ':' + KEY_ROUTES
             data = r_connection.get(key_name)
@@ -73,7 +75,7 @@ class RedisNextBusRepository(object):
     @gen.coroutine
     def store_routes(self, agency_tag, routes):  # pylint: disable=no-self-use
 
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        r_connection = self.get_redis_connection('master')
 
         routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
         try:
@@ -86,7 +88,9 @@ class RedisNextBusRepository(object):
 
     @gen.coroutine
     def get_route(self, agency_tag, route_tag):  # pylint: disable=no-self-use
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+
+        r_connection = self.get_redis_connection('slave')
+
         try:
             key_name = agency_tag + ':' + KEY_ROUTE + ':' + route_tag
             data = r_connection.get(key_name)
@@ -107,7 +111,7 @@ class RedisNextBusRepository(object):
     @gen.coroutine
     def store_route(self, agency_tag, route_tag, route):  # pylint: disable=no-self-use
 
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        r_connection = self.get_redis_connection('master')
 
         routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
         try:
@@ -120,7 +124,9 @@ class RedisNextBusRepository(object):
 
     @gen.coroutine
     def get_schedule(self, agency_tag, route_tag):  # pylint: disable=no-self-use
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+
+        r_connection = self.get_redis_connection('slave')
+
         try:
             key_name = agency_tag + ':' + KEY_ROUTE_SCHEDULE + ':' + route_tag
             data = r_connection.get(key_name)
@@ -140,7 +146,7 @@ class RedisNextBusRepository(object):
     @gen.coroutine
     def store_schedule(self, agency_tag, route_tag, schedule):  # pylint: disable=no-self-use
 
-        r_connection = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        r_connection = self.get_redis_connection('master')
 
         routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
         try:
@@ -150,3 +156,12 @@ class RedisNextBusRepository(object):
             raise exceptions.DatabaseOperationError('Cannot store routes in redis: {0}'.format(ex.message))
 
         raise gen.Return(schedule)
+
+    @staticmethod
+    def get_redis_connection(role):
+
+        host = settings.REDIS_MASTER_HOST if role == 'master' else settings.REDIS_SLAVE_HOST
+
+        r_connection = redis.StrictRedis(host=host, port=settings.REDIS_PORT, db=0)
+
+        return r_connection
