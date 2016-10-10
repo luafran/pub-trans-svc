@@ -8,7 +8,7 @@ from pubtrans.common import version
 from pubtrans.handlers.base_handler import BaseHandler
 
 
-class HealthHandler(BaseHandler):
+class HealthHandlerV1(BaseHandler):
     """
     Tornado handler class for health resource
     """

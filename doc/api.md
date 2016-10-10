@@ -1,19 +1,4 @@
-### Send a request to service health
-
-```shell
-$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/health' | python -m json.tool
-{
-    "status": {
-        "details": [],
-        "health": [
-            0,
-            "OK"
-        ],
-        "service": "pubtrans",
-        "version": "0.0.1"
-    }
-}
-```
+## Functional Endpoints
 
 ### Get agencies
 
@@ -106,7 +91,7 @@ $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-mun
 }
 ```
 
-## Get schedule for route {E} from agency {sf-muni}
+### Get schedule for route {E} from agency {sf-muni}
 
 ```shell
 $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-muni/routes/E/schedule' | python -m json.tool
@@ -204,5 +189,76 @@ $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-mun
             ]
         }
     ]
+}
+```
+
+## Operations and Support Endpoints
+
+### Send a request to service health
+
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/health' | python -m json.tool
+{
+    "status": {
+        "details": [],
+        "health": [
+            0,
+            "OK"
+        ],
+        "service": "pubtrans",
+        "version": "0.0.1"
+    }
+}
+```
+
+### Get the total number of queries made to each endpoint
+
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/stats/uri_count' | python -m json.tool
+{
+    "uriCount": {
+        "/v1/stats": 32,
+        "/v1/stats/slow_requests": 9,
+        "/v1/agencies": 8,
+        "/v1/stats/uri_count": 6,
+        "/v1/sf-muni/routes": 6,
+        "/v1/sf-muni/routes/6/schedule": 1
+    }
+}
+```
+
+### Get a list of requests that latest response time was greater than {500} ms.
+
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/stats/slow_requests?slow_limit=500' | python -m json.tool
+{
+    "slowRequests": {
+        "/v1/sf-muni/routes/6/schedule": 1425,
+        "/v1/sf-muni/routes": 872
+    }
+}
+```
+
+### Get all stats
+
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/stats | python -m json.tool
+{
+    "uriCount": {
+        "/v1/stats": 32,
+        "/v1/stats/slow_requests": 9,
+        "/v1/agencies": 8,
+        "/v1/stats/uri_count": 7,
+        "/v1/sf-muni/routes": 6,
+        "/v1/sf-muni/routes/6/schedule": 1
+    },
+    "slowRequests": {
+        "/v1/sf-muni/routes/6/schedule": 1425,
+        "/v1/sf-muni/routes": 872,
+        "/v1/stats": 5,
+        "/v1/agencies": 4,
+        "/v1/stats/slow_requests": 3,
+        "/v1/stats/uri_count": 2
+    }
 }
 ```

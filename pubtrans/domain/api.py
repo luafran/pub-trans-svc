@@ -1,3 +1,7 @@
+STAT_RESOURCE_URI_COUNT = 'uri_count'
+STAT_RESOURCE_SLOW_REQUESTS = 'slow_requests'
+QUERY_SLOW_LIMIT = 'slow_limit'
+
 TAG_AGENCIES = 'agencies'
 TAG_ROUTES = 'routes'
 TAG_TAG = 'tag'
@@ -29,3 +33,5 @@ TAG_TRS = 'trs'
 TAG_BLOCK_ID = 'blockId'
 TAG_TIME_DATA = 'timeData'
 TAG_STOP_TITLE = 'stopTitle'
+TAG_URI_COUNT = 'uriCount'
+TAG_SLOW_REQUESTS = 'slowRequests'

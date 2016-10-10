@@ -8,16 +8,14 @@ unit tests for route vehicles
 
 An endpoint to retrieve the routes that are not running at a specific time. For example, the 6 bus does
 not run between 1 AM and 5 AM, so the output of a query for 2 AM should include the 6.
-* Two endpoints to retrieve internal statistics about your service:
-    * The total number of queries made to each of the endpoints in your API
-    * A list of slow requests
+
 
 predictions stop id
 predictions stop id, route tag
 predictions route tag, stop tag
 predictions for multiple stops
 unit tests for predictions
-
+small unit tests for /stats
 
 COMPLETE: xml attributes in nextbus service should be constants
 
@@ -25,21 +23,21 @@ route partial responses
 schedule partial responses
 
 Add verbose option to route detail
-
 Use entity classes instead of dicts in APIs?
+Content negotiation json and xml
+
 
 Circuit breaker in nextbus service
-Content negotiation json and xml
 Fix version in health response
-
-Deployment
-
+Config using environment variables
+Centralize logs (ELK for example)
+Metrics: statsd or influxDB
 Switch to redis:alpine?
 
 
 Design
 
-Don't use OrderDict?
+Don't use OrderedDict?
 Element for all routes should be equal to element for single route, use partial responses or verbose
 Make the API support multiple agencies
     For NextBus provider
@@ -51,4 +49,5 @@ Install minikube
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.11.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
 curl -Lo kubectl http://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/darwin/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 
-
+Notes:
+uri stats does not count not found uris. This is basically to prevent unbound grow of redis set

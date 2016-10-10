@@ -2,10 +2,13 @@
 Generic (domain agnostic) stuff to support application
 """
 import Queue
+from collections import OrderedDict
 
+import redis
 import statsd
 
 from pubtrans.common import constants
+from pubtrans.common import exceptions
 from pubtrans.config import settings
 
 
@@ -13,6 +16,9 @@ class Support(object):
     """
     Class used to notify events useful to support the application
     """
+
+    SET_URIS_COUNT = 'uris:count'
+    SET_SLOW_REQUESTS = 'uris:slow_requests'
 
     def __init__(self, logger, extra_info=None):
         """
@@ -112,3 +118,55 @@ class Support(object):
     def stat_timing(self, stat, value, rate=1):
         if self._stats_enabled:
             self._stats_client.timing(stat, value, rate)
+
+    def update_uri_stats(self, uri, timing):
+        count = 1
+        try:
+            r_connection = redis.StrictRedis(host=settings.REDIS_MASTER_HOST, port=settings.REDIS_PORT, db=0)
+            r_connection.zincrby(self.SET_URIS_COUNT, uri, count)
+            r_connection.zadd(self.SET_SLOW_REQUESTS, timing, uri)
+        except exceptions.DatabaseOperationError as ex:
+            # Should not fail if cache is not available
+            self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                             format(self.handler_name, ex.message))
+
+    def get_uri_count(self):
+
+        try:
+            r_connection = redis.StrictRedis(host=settings.REDIS_MASTER_HOST, port=settings.REDIS_PORT, db=0)
+            redis_response = r_connection.zrevrangebyscore(self.SET_URIS_COUNT, '+inf', '-inf',
+                                                           withscores=True)
+        except exceptions.DatabaseOperationError as ex:
+            # Should not fail if cache is not available
+            self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                             format(self.handler_name, ex.message))
+            redis_response = []
+
+        response = OrderedDict()
+        for uri in redis_response:
+            response[uri[0]] = int(uri[1])
+
+        return response
+
+    def get_slow_requests(self, slow_limit):
+
+        try:
+            r_connection = redis.StrictRedis(host=settings.REDIS_MASTER_HOST, port=settings.REDIS_PORT, db=0)
+
+            min_score = '-inf'
+            if slow_limit:
+                min_score = slow_limit
+
+            redis_response = r_connection.zrevrangebyscore(self.SET_SLOW_REQUESTS, '+inf', min_score,
+                                                           withscores=True)
+        except exceptions.DatabaseOperationError as ex:
+            # Should not fail if cache is not available
+            self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                             format(self.handler_name, ex.message))
+            redis_response = []
+
+        response = OrderedDict()
+        for uri in redis_response:
+            response[uri[0]] = int(uri[1])
+
+        return response

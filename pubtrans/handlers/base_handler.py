@@ -162,6 +162,9 @@ class BaseHandler(tornado.web.RequestHandler):
         self.support.notify_debug("[BaseHandler] Processing Time: %i ms" % timing)
         self.support.stat_timing('net.responses.time', timing)
 
+        if not isinstance(result, exceptions.NotFoundBase):
+            self.support.update_uri_stats(self.request.path, timing)
+
         self.support.notify_debug(
             "[BaseHandler] response code: %s" % str(self.get_status()))
         self.support.notify_debug(

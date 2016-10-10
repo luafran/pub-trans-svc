@@ -12,6 +12,7 @@ from pubtrans.handlers import health
 from pubtrans.handlers import agencies
 from pubtrans.handlers import routes
 from pubtrans.handlers import route_schedule
+from pubtrans.handlers import stats
 from pubtrans.repositories import redis_nextbus_repository
 
 
@@ -36,8 +37,10 @@ def make_app():
              {'application_settings': settings, 'handler_name': 'RoutesHandlerV1'}),
             (r'.*/v1/([^/]*)/routes/?([^/]*)/schedule$', route_schedule.RouteScheduleHandlerV1,
              {'application_settings': settings, 'handler_name': 'ScheduleHandlerV1'}),
-            (r'.*/health/?$', health.HealthHandler,
-             {'application_settings': settings, 'handler_name': 'Health'}),
+            (r'.*/v1/stats/?([^/]*)$', stats.StatsHandlerV1,
+             {'application_settings': settings, 'handler_name': 'StatsHandlerV1'}),
+            (r'.*/v1/health/?$', health.HealthHandlerV1,
+             {'application_settings': settings, 'handler_name': 'HealthHandlerV1'}),
         ],
         default_handler_class=default_handler.DefaultHandler,
         service_name='pubtrans',

@@ -20,6 +20,6 @@ class TestHealthCheck(testing.AsyncHTTPTestCase):
         return app
 
     def test_when_ok_returns_200(self):
-        self.http_client.fetch(self.get_url('/health'), self.stop, method='GET')
+        self.http_client.fetch(self.get_url('/v1/health'), self.stop, method='GET')
         response = self.wait()
         self.assertEqual(200, response.code, "Response should be 200, got %s instead" % response.code)
