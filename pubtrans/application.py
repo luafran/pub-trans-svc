@@ -13,7 +13,7 @@ from pubtrans.handlers import agencies
 from pubtrans.handlers import routes
 from pubtrans.handlers import route_schedule
 from pubtrans.handlers import stats
-from pubtrans.repositories import redis_nextbus_repository
+from pubtrans.repositories import redis_repository
 
 
 def shutdown():
@@ -27,7 +27,7 @@ def sig_handler(sig, frame):  # pylint: disable=unused-argument
 
 def make_app():
 
-    settings.nextbus_repository = redis_nextbus_repository.RedisNextBusRepository(None)
+    settings.repository = redis_repository.RedisRepository(None)
 
     _the_app = tornado.web.Application(
         [

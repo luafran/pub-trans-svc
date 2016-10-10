@@ -88,21 +88,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         raise gen.Return(agencies)
 
     @gen.coroutine
-    def get_routes(self, agency_tag, route_tag=None):
-        """
-        Get routes
-        """
-        if route_tag:
-            route = yield self.get_route(agency_tag, route_tag)
-            # This method should return a list
-            routes = [route]
-        else:
-            routes = yield self.get_all_routes(agency_tag)
-
-        raise gen.Return(routes)
-
-    @gen.coroutine
-    def get_all_routes(self, agency_tag):
+    def get_routes(self, agency_tag):
         """
         Get all routes
         """

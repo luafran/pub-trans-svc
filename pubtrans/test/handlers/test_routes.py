@@ -9,7 +9,7 @@ from pubtrans import application
 from pubtrans.common.rest_adapter import RestAdapter
 from pubtrans.config import settings
 from pubtrans.domain import api
-from pubtrans.repositories.redis_nextbus_repository import RedisNextBusRepository
+from pubtrans.repositories.redis_repository import RedisRepository
 from pubtrans.services.next_bus import NextBusService
 
 app = application.make_app()
@@ -95,8 +95,8 @@ class TestRoutesHandlerV1(testing.AsyncHTTPTestCase):
         }
         self.assertDictContainsSubset(expected_response, actual_response)
 
-    @mock.patch.object(RedisNextBusRepository, "store_routes")
-    @mock.patch.object(RedisNextBusRepository, "get_routes")
+    @mock.patch.object(RedisRepository, "store_routes")
+    @mock.patch.object(RedisRepository, "get_routes")
     def test_routes_not_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -149,8 +149,8 @@ class TestRoutesHandlerV1(testing.AsyncHTTPTestCase):
         self.maxDiff = None
         self.assertEqual(expected_service_response, actual_service_response)
 
-    @mock.patch.object(RedisNextBusRepository, "store_routes")
-    @mock.patch.object(RedisNextBusRepository, "get_routes")
+    @mock.patch.object(RedisRepository, "store_routes")
+    @mock.patch.object(RedisRepository, "get_routes")
     def test_routes_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -195,8 +195,8 @@ class TestRoutesHandlerV1(testing.AsyncHTTPTestCase):
         self.maxDiff = None
         self.assertEqual(expected_service_response, actual_service_response)
 
-    @mock.patch.object(RedisNextBusRepository, "store_routes")
-    @mock.patch.object(RedisNextBusRepository, "get_routes")
+    @mock.patch.object(RedisRepository, "store_routes")
+    @mock.patch.object(RedisRepository, "get_routes")
     def test_routes_not_in_cache_with_short_titles(self, mocked_repo_get, mocked_repo_store):
         @gen.coroutine
         def get_success(path=None, body=None, query=None,

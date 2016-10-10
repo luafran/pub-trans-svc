@@ -9,7 +9,7 @@ from pubtrans import application
 from pubtrans.common.rest_adapter import RestAdapter
 from pubtrans.config import settings
 from pubtrans.domain import api
-from pubtrans.repositories.redis_nextbus_repository import RedisNextBusRepository
+from pubtrans.repositories.redis_repository import RedisRepository
 from pubtrans.services.next_bus import NextBusService
 
 app = application.make_app()
@@ -174,8 +174,8 @@ class TestRouteHandlerV1(testing.AsyncHTTPTestCase):
     def get_new_ioloop(self):  # pylint: disable=unused-argument
         return ioloop.IOLoop.instance()
 
-    @mock.patch.object(RedisNextBusRepository, "store_route")
-    @mock.patch.object(RedisNextBusRepository, "get_route")
+    @mock.patch.object(RedisRepository, "store_route")
+    @mock.patch.object(RedisRepository, "get_route")
     def test_route_not_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -228,10 +228,9 @@ class TestRouteHandlerV1(testing.AsyncHTTPTestCase):
         self.maxDiff = None
         self.assertEqual(actual_service_response[api.TAG_DIRECTIONS],
                          expected_service_response[api.TAG_DIRECTIONS])
-        # self.assertDictEqual(expected_service_response, actual_service_response)
 
-    @mock.patch.object(RedisNextBusRepository, "store_route")
-    @mock.patch.object(RedisNextBusRepository, "get_route")
+    @mock.patch.object(RedisRepository, "store_route")
+    @mock.patch.object(RedisRepository, "get_route")
     def test_route_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -242,7 +241,7 @@ class TestRouteHandlerV1(testing.AsyncHTTPTestCase):
 
         @gen.coroutine
         def get_item(agency_tag, route_tag):  # pylint: disable=unused-argument
-            route = [self.mock_nextbus_response_as_obj]
+            route = self.mock_nextbus_response_as_obj
 
             raise gen.Return(route)
 

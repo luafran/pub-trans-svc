@@ -15,7 +15,7 @@ KEY_ROUTES = 'routes'
 KEY_ROUTE_SCHEDULE = 'route_schedule'
 
 
-class RedisNextBusRepository(object):
+class RedisRepository(object):
     def __init__(self, context):
         self.context = context
 
@@ -102,7 +102,6 @@ class RedisNextBusRepository(object):
         else:
             try:
                 route = json.loads(data)
-                route = [route]
             except TypeError:
                 raise exceptions.DatabaseOperationError('Invalid format for route')
 

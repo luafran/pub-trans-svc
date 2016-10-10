@@ -9,7 +9,7 @@ from pubtrans import application
 from pubtrans.common.rest_adapter import RestAdapter
 from pubtrans.config import settings
 from pubtrans.domain import api
-from pubtrans.repositories.redis_nextbus_repository import RedisNextBusRepository
+from pubtrans.repositories.redis_repository import RedisRepository
 from pubtrans.services.next_bus import NextBusService
 
 app = application.make_app()
@@ -128,8 +128,8 @@ class TestRouteScheduleHandlerV1(testing.AsyncHTTPTestCase):
     def get_new_ioloop(self):  # pylint: disable=unused-argument
         return ioloop.IOLoop.instance()
 
-    @mock.patch.object(RedisNextBusRepository, "store_schedule")
-    @mock.patch.object(RedisNextBusRepository, "get_schedule")
+    @mock.patch.object(RedisRepository, "store_schedule")
+    @mock.patch.object(RedisRepository, "get_schedule")
     def test_schedule_not_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -184,8 +184,8 @@ class TestRouteScheduleHandlerV1(testing.AsyncHTTPTestCase):
         self.maxDiff = None
         self.assertEqual(expected_service_response, actual_service_response)
 
-    @mock.patch.object(RedisNextBusRepository, "store_schedule")
-    @mock.patch.object(RedisNextBusRepository, "get_schedule")
+    @mock.patch.object(RedisRepository, "store_schedule")
+    @mock.patch.object(RedisRepository, "get_schedule")
     def test_schedule_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine

@@ -1,6 +1,8 @@
 STAT_RESOURCE_URI_COUNT = 'uri_count'
 STAT_RESOURCE_SLOW_REQUESTS = 'slow_requests'
+
 QUERY_SLOW_LIMIT = 'slow_limit'
+QUERY_FIELDS = 'fields'
 
 TAG_AGENCIES = 'agencies'
 TAG_ROUTES = 'routes'
