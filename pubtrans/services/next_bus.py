@@ -1,6 +1,7 @@
 """
 Connector to NextBus Service
 """
+import sys
 from collections import OrderedDict
 from tornado import gen
 
@@ -166,7 +167,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
             agency = OrderedDict([
                 (api.TAG_TAG, agency_xml.get(self.XML_ATTR_TAG)),
                 (api.TAG_TITLE, agency_xml.get(self.XML_ATTR_TITLE)),
-                (api.TAG_REGION_TITILE, agency_xml.get(self.XML_ATTR_REGION_TITLE))
+                (api.TAG_REGION_TITLE, agency_xml.get(self.XML_ATTR_REGION_TITLE))
             ])
             agencies.append(agency)
 
@@ -287,19 +288,13 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
 
         schedule[api.TAG_SCHEDULE_CLASS] = routes_xml[0].get(self.XML_ATTR_SCHEDULE_CLASS)
 
-        schedule_items = []
+        schedule[api.TAG_SCHEDULE_ITEMS] = OrderedDict()
         for route_xml in routes_xml:
-            schedule_item = OrderedDict([
-                (api.TAG_SERVICE_CLASS, route_xml.get(self.XML_ATTR_SERVICE_CLASS)),
-                (api.TAG_DIRECTION, route_xml.get(self.XML_ATTR_DIRECTION))
-            ])
 
-            schedule_item[api.TAG_HEADER_STOPS] = self.build_header_stops(route_xml)
-            schedule_item[api.TAG_TRS] = self.build_schedule_rows(route_xml)
-
-            schedule_items.append(schedule_item)
-
-        schedule[api.TAG_SCHEDULE_ITEMS] = schedule_items
+            schedule_item = self.build_schedule_item(route_xml)
+            schedule_item_key = schedule_item[api.TAG_SERVICE_CLASS].lower() + ':' + \
+                schedule_item[api.TAG_DIRECTION].lower()
+            schedule[api.TAG_SCHEDULE_ITEMS][schedule_item_key] = schedule_item
 
         return schedule
 
@@ -329,15 +324,61 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
             trs_result.append(tr_result)
         return trs_result
 
-    def build_header_stops(self, route_xml):
+    def build_schedule_item(self, route_xml):
+        schedule_item = OrderedDict([
+            (api.TAG_SERVICE_CLASS, route_xml.get(self.XML_ATTR_SERVICE_CLASS)),
+            (api.TAG_DIRECTION, route_xml.get(self.XML_ATTR_DIRECTION))
+        ])
+
+        schedule_item[api.TAG_STOPS] = self.build_schedule_stops(route_xml)
+
+        trs_xml = route_xml.get(self.ELEMENT_TR)
+        if not isinstance(trs_xml, list):
+            trs_xml = [trs_xml]
+
+        min_epoch = sys.maxint
+        max_epoch = -1
+        min_start_time_str = ''
+        max_start_time_str = ''
+        for tr_xml in trs_xml:
+
+            stops_xml = tr_xml.get(self.ELEMENT_STOP)
+            if not isinstance(stops_xml, list):
+                stops_xml = [stops_xml]
+
+            for stop_xml in stops_xml:
+                stop_tag = stop_xml.get(self.XML_ATTR_TAG)
+                stop = OrderedDict()
+                epoch_time = stop_xml.get(self.XML_ATTR_EPOCH_TIME)
+                if epoch_time != '-1':
+                    stop[api.TAG_EPOCH_TIME] = epoch_time
+                    stop[api.TAG_TIME_DATA] = stop_xml.get('#text')
+                    schedule_item[api.TAG_STOPS][stop_tag][api.TAG_SCHEDULED_ARRIVALS].append(stop)
+
+                    epoch = int(stop.get(api.TAG_EPOCH_TIME))
+                    if epoch > 0:
+                        if epoch < min_epoch:
+                            min_epoch = epoch
+                            min_start_time_str = stop.get(api.TAG_TIME_DATA)
+                        if epoch > max_epoch:
+                            max_epoch = epoch
+                            max_start_time_str = stop.get(api.TAG_TIME_DATA)
+
+        schedule_item[api.TAG_SCHEDULE_START_TIME] = min_start_time_str
+        schedule_item[api.TAG_SCHEDULE_END_TIME] = max_start_time_str
+
+        return schedule_item
+
+    def build_schedule_stops(self, route_xml):
         header_stops_xml = route_xml.get(self.ELEMENT_HEADER).get(self.ELEMENT_STOP)
         if not isinstance(header_stops_xml, list):
             header_stops_xml = [header_stops_xml]
-        header_stops = []
+        header_stops = {}
         for header_stop_xml in header_stops_xml:
             header_stop = OrderedDict([
                 (api.TAG_TAG, header_stop_xml.get(self.XML_ATTR_TAG)),
-                (api.TAG_STOP_TITLE, header_stop_xml.get('#text'))
+                (api.TAG_TITLE, header_stop_xml.get('#text')),
+                (api.TAG_SCHEDULED_ARRIVALS, [])
             ])
-            header_stops.append(header_stop)
+            header_stops[header_stop[api.TAG_TAG]] = header_stop
         return header_stops

@@ -37,5 +37,5 @@ class TestSchedule(testing.AsyncHTTPTestCase):
         schedule_items = schedule.get(api.TAG_SCHEDULE_ITEMS)
         self.assertIsNotNone(schedule_items)
         self.assertGreater(len(schedule_items), 1)
-        self.assertIsNotNone(schedule_items[0].get(api.TAG_SERVICE_CLASS))
-        self.assertIsNotNone(schedule_items[0].get(api.TAG_DIRECTION))
+        self.assertIsNotNone(schedule_items['wkd:inbound'].get(api.TAG_SERVICE_CLASS))
+        self.assertIsNotNone(schedule_items['wkd:inbound'].get(api.TAG_DIRECTION))

@@ -1,3 +1,5 @@
+import datetime
+
 from tornado import gen
 
 from pubtrans.common import exceptions
@@ -31,7 +33,8 @@ class Service(object):
 
         if agencies is None:
             # Use service and cache result
-            self.support.notify_debug('agency {0} not found in cache. Using service'.format(agency_tag))
+            self.support.notify_debug('[Service] agency {0} not found in cache. Using service'.
+                                      format(agency_tag))
             nextbus_service = NextBusService(support=self.support)
             agencies = yield nextbus_service.get_agencies()
 
@@ -46,20 +49,23 @@ class Service(object):
         raise gen.Return(agency)
 
     @gen.coroutine
-    def get_routes(self, agency_tag):
+    def get_routes(self, agency_tag, criteria):
 
         routes = yield self.get_routes_from_cache(agency_tag)
 
         if routes is None:
             # Use service and cache result
-            self.support.notify_debug('routes for {0} not found in cache. Using service'.format(agency_tag))
+            self.support.notify_debug('[Service] routes for {0} not found in cache. Using service'.
+                                      format(agency_tag))
             nextbus_service = NextBusService(support=self.support)
             routes = yield nextbus_service.get_routes(agency_tag)
 
             yield self.store_routes_in_cache(agency_tag, routes)
 
-        # for route in routes:
-        #     route_schedule = yield self.get_route_schedule(agency_tag, route[api.TAG_TAG])
+        not_running_at = criteria.get(api.CRITERIA_NOT_RUNNING_AT)
+
+        if not_running_at:
+            routes = yield self.get_routes_not_running_at(agency_tag, routes, not_running_at)
 
         raise gen.Return(routes)
 
@@ -191,3 +197,24 @@ class Service(object):
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
                                      format(self.handler_name, ex.message))
+
+    @gen.coroutine
+    def get_routes_not_running_at(self, agency_tag, routes, not_running_at):
+        service_class = ['sun', 'sat', 'wkd', 'wkd', 'wkd', 'wkd', 'wkd']
+        now_weekday = datetime.datetime.now().strftime("%w")
+        schedule_item_key = service_class[int(now_weekday)] + ':inbound'
+        self.support.notify_debug('[Service] not_running_at: {0}'.format(not_running_at))
+        self.support.notify_debug('[Service] now_weekday: {0}'.format(now_weekday))
+        self.support.notify_debug('[Service] schedule_item_key: {0}'.format(schedule_item_key))
+
+        filtered_routes = []
+        for route in routes:
+            route_schedule = yield self.get_route_schedule(agency_tag, route[api.TAG_TAG])
+            schedule_item = route_schedule.get(api.TAG_SCHEDULE_ITEMS).get(schedule_item_key)
+            if schedule_item is None or \
+                    ((not_running_at < schedule_item.get(api.TAG_SCHEDULE_START_TIME)) and
+                     (not_running_at > schedule_item.get(api.TAG_SCHEDULE_END_TIME))):
+
+                filtered_routes.append(route)
+
+        raise gen.Return(filtered_routes)

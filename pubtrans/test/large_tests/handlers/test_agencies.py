@@ -36,4 +36,4 @@ class TestAgencies(testing.AsyncHTTPTestCase):
         self.assertGreater(len(agencies), 1)
         self.assertIsNotNone(agencies[0].get(api.TAG_TAG))
         self.assertIsNotNone(agencies[0].get(api.TAG_TITLE))
-        self.assertIsNotNone(agencies[0].get(api.TAG_REGION_TITILE))
+        self.assertIsNotNone(agencies[0].get(api.TAG_REGION_TITLE))

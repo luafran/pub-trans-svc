@@ -42,7 +42,7 @@ class RedisRepository(object):
 
         r_connection = self.get_redis_connection('master')
 
-        agencies_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
+        agencies_ttl = settings.AGENCIES_CACHE_TTL_SECONDS
         try:
 
             r_connection.set(KEY_AGENCIES, json.dumps(agencies), ex=agencies_ttl)
@@ -77,7 +77,7 @@ class RedisRepository(object):
 
         r_connection = self.get_redis_connection('master')
 
-        routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
+        routes_ttl = settings.ROUTES_CACHE_TTL_SECONDS
         try:
             key_name = agency_tag + ':' + KEY_ROUTES
             r_connection.set(key_name, json.dumps(routes), ex=routes_ttl)
@@ -112,7 +112,7 @@ class RedisRepository(object):
 
         r_connection = self.get_redis_connection('master')
 
-        routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
+        routes_ttl = settings.ROUTE_CACHE_TTL_SECONDS
         try:
             key_name = agency_tag + ':' + KEY_ROUTE + ':' + route_tag
             r_connection.set(key_name, json.dumps(route), ex=routes_ttl)
@@ -147,7 +147,7 @@ class RedisRepository(object):
 
         r_connection = self.get_redis_connection('master')
 
-        routes_ttl = settings.NEXTBUS_CACHE_TTL_SECONDS
+        routes_ttl = settings.SCHEDULE_CACHE_TTL_SECONDS
         try:
             key_name = agency_tag + ':' + KEY_ROUTE_SCHEDULE + ':' + route_tag
             r_connection.set(key_name, json.dumps(schedule), ex=routes_ttl)
