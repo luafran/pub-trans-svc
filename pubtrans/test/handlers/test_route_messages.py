@@ -37,14 +37,25 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
             '    </message>' \
             '  </route>' \
             '  <route tag="E">' \
-            '    <message id="100" sendToBuses="false" priority="Medium">' \
-            '      <text>Route message 1</text>' \
+            '    <message id="22003" sendToBuses="false" priority="Normal">' \
+            '      <routeConfiguredForMessage tag="E">        ' \
+            '        <stop tag="5234" title="King St &amp; 2nd St" />' \
+            '        <stop tag="5237" title="King St &amp; 2nd St" />' \
+            '</routeConfiguredForMessage>' \
+            '      <interval startDay="0" startTime="32400" endDay="0" endTime="68340" />' \
+            '      <interval startDay="1" startTime="32400" endDay="1" endTime="68340" />' \
+            '      <interval startDay="2" startTime="32400" endDay="2" endTime="68340" />' \
+            '      <text>Board E at other &#10;end of station</text>' \
             '    </message>' \
-            '    <message id="101" sendToBuses="true" priority="Low">' \
-            '      <text>Route message 2</text>' \
-            '    </message>' \
-            '    <message id="102" sendToBuses="false" priority="Low">' \
-            '      <text>Route message 3</text>' \
+            '    <message id="22004" sendToBuses="false" priority="Normal">' \
+            '      <routeConfiguredForMessage tag="E">' \
+            '        <stop tag="4506" title="The Embarcadero &amp; Brannan St" />' \
+            '        <stop tag="7145" title="The Embarcadero &amp; Brannan St" />' \
+            '</routeConfiguredForMessage>' \
+            '      <interval startDay="0" startTime="32400" endDay="0" endTime="68340" />' \
+            '      <interval startDay="1" startTime="32400" endDay="1" endTime="68340" />' \
+            '      <interval startDay="2" startTime="32400" endDay="2" endTime="68340" />' \
+            '      <text>Board E stops at&#10;side platform</text>' \
             '    </message>' \
             '  </route>' \
             '</body>'
@@ -72,22 +83,76 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
             ],
             api.TAG_ROUTE_MESSAGES: [
                 {
-                    api.TAG_ID: "100",
+                    api.TAG_ID: "22003",
                     api.TAG_SEND_TO_BUSES: "false",
-                    api.TAG_PRIORITY: "Medium",
-                    api.TAG_TEXT: "Route message 1"
+                    api.TAG_PRIORITY: "Normal",
+                    api.TAG_TEXT: "Board E at other \nend of station",
+                    api.TAG_STOPS: [
+                        {
+                            api.TAG_TAG: "5234",
+                            api.TAG_TITLE: "King St & 2nd St"
+                        },
+                        {
+                            api.TAG_TAG: "5237",
+                            api.TAG_TITLE: "King St & 2nd St"
+                        }
+                    ],
+                    api.TAG_INTERVALS: [
+                        {
+                            api.TAG_START_DAY: "0",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "0",
+                            api.TAG_END_TIME: "68340"
+                        },
+                        {
+                            api.TAG_START_DAY: "1",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "1",
+                            api.TAG_END_TIME: "68340"
+                        },
+                        {
+                            api.TAG_START_DAY: "2",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "2",
+                            api.TAG_END_TIME: "68340"
+                        }
+                    ]
                 },
                 {
-                    api.TAG_ID: "101",
-                    api.TAG_SEND_TO_BUSES: "true",
-                    api.TAG_PRIORITY: "Low",
-                    api.TAG_TEXT: "Route message 2"
-                },
-                {
-                    api.TAG_ID: "102",
+                    api.TAG_ID: "22004",
                     api.TAG_SEND_TO_BUSES: "false",
-                    api.TAG_PRIORITY: "Low",
-                    api.TAG_TEXT: "Route message 3"
+                    api.TAG_PRIORITY: "Normal",
+                    api.TAG_TEXT: "Board E stops at\nside platform",
+                    api.TAG_STOPS: [
+                        {
+                            api.TAG_TAG: "4506",
+                            api.TAG_TITLE: "The Embarcadero & Brannan St"
+                        },
+                        {
+                            api.TAG_TAG: "7145",
+                            api.TAG_TITLE: "The Embarcadero & Brannan St"
+                        }
+                    ],
+                    api.TAG_INTERVALS: [
+                        {
+                            api.TAG_START_DAY: "0",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "0",
+                            api.TAG_END_TIME: "68340"
+                        },
+                        {
+                            api.TAG_START_DAY: "1",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "1",
+                            api.TAG_END_TIME: "68340"
+                        },
+                        {
+                            api.TAG_START_DAY: "2",
+                            api.TAG_START_TIME: "32400",
+                            api.TAG_END_DAY: "2",
+                            api.TAG_END_TIME: "68340"
+                        }
+                    ]
                 }
             ]
         }
@@ -128,6 +193,7 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
             self.http_client.fetch(request, self.stop)
             response = self.wait()
 
+        self.maxDiff = None
         self.assertEqual(response.code, 200)
         actual_service_response = json.loads(response.body)
 
@@ -146,11 +212,11 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
 
         mocked_repo_get.assert_called_once()
         actual_cached_item = mocked_repo_store.call_args_list[0][0][2]
-        self.assertEqual(actual_cached_item, self.mock_nextbus_response_as_obj)
+        self.maxDiff = None
+        self.assertDictEqual(actual_cached_item, self.mock_nextbus_response_as_obj)
         self.assertEqual(len(actual_cached_item[api.TAG_ALL_MESSAGES]),
                          len(self.mock_nextbus_response_as_obj[api.TAG_ALL_MESSAGES]))
 
-        self.maxDiff = None
         self.assertDictEqual(expected_service_response, actual_service_response)
 
     @mock.patch.object(RedisRepository, "store_route_messages")
@@ -185,6 +251,7 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
             self.http_client.fetch(request, self.stop)
             response = self.wait()
 
+        self.maxDiff = None
         self.assertEqual(response.code, 200)
         actual_service_response = json.loads(response.body)
 
@@ -194,5 +261,4 @@ class TestRouteMessagesHandlerV1(testing.AsyncHTTPTestCase):
         self.assertFalse(mocked_rest_adapter.called)
         self.assertFalse(mocked_repo_store.called)
 
-        self.maxDiff = None
         self.assertEqual(expected_service_response, actual_service_response)

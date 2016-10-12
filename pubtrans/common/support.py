@@ -125,10 +125,11 @@ class Support(object):
             r_connection = redis.StrictRedis(host=settings.REDIS_MASTER_HOST, port=settings.REDIS_PORT, db=0)
             r_connection.zincrby(self.SET_URIS_COUNT, uri, count)
             r_connection.zadd(self.SET_SLOW_REQUESTS, timing, uri)
-        except exceptions.DatabaseOperationError as ex:
+
+        except redis.ConnectionError as ex:
             # Should not fail if cache is not available
             self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                             format(self.handler_name, ex.message))
+                             format('Support', ex.message))
 
     def get_uri_count(self):
 
@@ -136,10 +137,10 @@ class Support(object):
             r_connection = redis.StrictRedis(host=settings.REDIS_MASTER_HOST, port=settings.REDIS_PORT, db=0)
             redis_response = r_connection.zrevrangebyscore(self.SET_URIS_COUNT, '+inf', '-inf',
                                                            withscores=True)
-        except exceptions.DatabaseOperationError as ex:
+        except redis.ConnectionError as ex:
             # Should not fail if cache is not available
             self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                             format(self.handler_name, ex.message))
+                             format('Support', ex.message))
             redis_response = []
 
         response = OrderedDict()
@@ -159,10 +160,10 @@ class Support(object):
 
             redis_response = r_connection.zrevrangebyscore(self.SET_SLOW_REQUESTS, '+inf', min_score,
                                                            withscores=True)
-        except exceptions.DatabaseOperationError as ex:
+        except redis.ConnectionError as ex:
             # Should not fail if cache is not available
             self.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                             format(self.handler_name, ex.message))
+                             format('Support', ex.message))
             redis_response = []
 
         response = OrderedDict()

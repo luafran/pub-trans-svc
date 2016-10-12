@@ -129,7 +129,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
             agencies = None
 
         raise gen.Return(agencies)
@@ -142,7 +142,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
 
     @gen.coroutine
     def get_routes_from_cache(self, agency_tag):
@@ -152,7 +152,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
             routes = None
 
         raise gen.Return(routes)
@@ -165,7 +165,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
             route = None
 
         raise gen.Return(route)
@@ -178,7 +178,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
 
     @gen.coroutine
     def store_route_in_cache(self, agency_tag, route_tag, route):
@@ -188,7 +188,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
 
     @gen.coroutine
     def get_route_schedule_from_cache(self, agency_tag, route_tag):
@@ -198,7 +198,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
             routes = None
 
         raise gen.Return(routes)
@@ -211,7 +211,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
 
     @gen.coroutine
     def get_route_messages_from_cache(self, agency_tag, route_tag):
@@ -221,7 +221,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
             routes = None
 
         raise gen.Return(routes)
@@ -234,7 +234,7 @@ class Service(object):
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
-                                     format(self.handler_name, ex.message))
+                                     format('Service', ex.message))
 
     @gen.coroutine
     def get_routes_not_running_at(self, agency_tag, routes, not_running_at):

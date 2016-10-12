@@ -42,6 +42,8 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     ELEMENT_TR = 'tr'
     ELEMENT_MESSAGE = 'message'
     ELEMENT_TEXT = 'text'
+    ELEMENT_ROUTE_CONFIGURED_FOR_MESSAGE = 'routeConfiguredForMessage'
+    ELEMENT_INTERVAL = 'interval'
 
     XML_ATTR_TAG = '@tag'
     XML_ATTR_TITLE = '@title'
@@ -58,6 +60,10 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     XML_ATTR_ID = '@id'
     XML_ATTR_SEND_TO_BUSES = '@sendToBuses'
     XML_ATTR_PRIORITY = '@priority'
+    XML_ATTR_START_DAY = '@startDay'
+    XML_ATTR_START_TIME = '@startTime'
+    XML_ATTR_END_DAY = '@endDay'
+    XML_ATTR_END_TIME = '@endTime'
 
     def __init__(self, support=None):
         endpoint = settings.NEXTBUS_SERVICE_URL
@@ -431,6 +437,29 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
                     (api.TAG_PRIORITY, message_xml.get(self.XML_ATTR_PRIORITY)),
                     (api.TAG_TEXT, message_xml.get(self.ELEMENT_TEXT))
                 ])
+
+                if route_tag != 'all':
+                    message[api.TAG_STOPS] = []
+                    route_configured_xml = message_xml.get(self.ELEMENT_ROUTE_CONFIGURED_FOR_MESSAGE)
+                    stops_xml = route_configured_xml.get(self.ELEMENT_STOP) if route_configured_xml else []
+                    for stop_xml in stops_xml:
+                        stop = OrderedDict([
+                            (api.TAG_TAG, stop_xml.get(self.XML_ATTR_TAG)),
+                            (api.TAG_TITLE, stop_xml.get(self.XML_ATTR_TITLE))
+                        ])
+                        message[api.TAG_STOPS].append(stop)
+                    intervals_xml = message_xml.get(self.ELEMENT_INTERVAL)
+                    if intervals_xml:
+                        message[api.TAG_INTERVALS] = []
+                    for interval_xml in intervals_xml:
+                        interval = OrderedDict([
+                            (api.TAG_START_DAY, interval_xml.get(self.XML_ATTR_START_DAY)),
+                            (api.TAG_START_TIME, interval_xml.get(self.XML_ATTR_START_TIME)),
+                            (api.TAG_END_DAY, interval_xml.get(self.XML_ATTR_END_DAY)),
+                            (api.TAG_END_TIME, interval_xml.get(self.XML_ATTR_END_TIME))
+                        ])
+                        message[api.TAG_INTERVALS].append(interval)
+
                 messages.append(message)
 
         route_messages = OrderedDict()
