@@ -111,8 +111,8 @@ class TestRouteScheduleHandlerV1(testing.AsyncHTTPTestCase):
     def get_new_ioloop(self):  # pylint: disable=unused-argument
         return ioloop.IOLoop.instance()
 
-    @mock.patch.object(RedisRepository, "store_schedule")
-    @mock.patch.object(RedisRepository, "get_schedule")
+    @mock.patch.object(RedisRepository, "store_route_schedule")
+    @mock.patch.object(RedisRepository, "get_route_schedule")
     def test_schedule_not_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
@@ -168,8 +168,8 @@ class TestRouteScheduleHandlerV1(testing.AsyncHTTPTestCase):
         # Have to fix expected response
         # self.assertDictEqual(expected_service_response, actual_service_response)
 
-    @mock.patch.object(RedisRepository, "store_schedule")
-    @mock.patch.object(RedisRepository, "get_schedule")
+    @mock.patch.object(RedisRepository, "store_route_schedule")
+    @mock.patch.object(RedisRepository, "get_route_schedule")
     def test_schedule_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine

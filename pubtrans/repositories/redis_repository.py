@@ -13,6 +13,7 @@ KEY_AGENCIES = 'agencies'
 KEY_ROUTE = 'route'
 KEY_ROUTES = 'routes'
 KEY_ROUTE_SCHEDULE = 'route_schedule'
+KEY_ROUTE_MESSAGES = 'route_messages'
 
 
 class RedisRepository(object):
@@ -122,7 +123,7 @@ class RedisRepository(object):
         raise gen.Return(route)
 
     @gen.coroutine
-    def get_schedule(self, agency_tag, route_tag):  # pylint: disable=no-self-use
+    def get_route_schedule(self, agency_tag, route_tag):  # pylint: disable=no-self-use
 
         r_connection = self.get_redis_connection('slave')
 
@@ -143,16 +144,53 @@ class RedisRepository(object):
         raise gen.Return(schedule)
 
     @gen.coroutine
-    def store_schedule(self, agency_tag, route_tag, schedule):  # pylint: disable=no-self-use
+    def store_route_schedule(self, agency_tag, route_tag, schedule):  # pylint: disable=no-self-use
 
         r_connection = self.get_redis_connection('master')
 
-        routes_ttl = settings.SCHEDULE_CACHE_TTL_SECONDS
+        route_schedule_ttl = settings.SCHEDULE_CACHE_TTL_SECONDS
         try:
             key_name = agency_tag + ':' + KEY_ROUTE_SCHEDULE + ':' + route_tag
-            r_connection.set(key_name, json.dumps(schedule), ex=routes_ttl)
+            r_connection.set(key_name, json.dumps(schedule), ex=route_schedule_ttl)
         except redis.ConnectionError as ex:
-            raise exceptions.DatabaseOperationError('Cannot store routes in redis: {0}'.format(ex.message))
+            raise exceptions.DatabaseOperationError('Cannot store route schedule in redis: {0}'.
+                                                    format(ex.message))
+
+        raise gen.Return(schedule)
+
+    @gen.coroutine
+    def get_route_messages(self, agency_tag, route_tag):  # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('slave')
+
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            data = r_connection.get(key_name)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot get route messages from redis: {0}'.
+                                                    format(ex.message))
+        if data is None:
+            messages = None
+        else:
+            try:
+                messages = json.loads(data)
+            except TypeError:
+                raise exceptions.DatabaseOperationError('Invalid format for route messages')
+
+        raise gen.Return(messages)
+
+    @gen.coroutine
+    def store_route_messages(self, agency_tag, route_tag, schedule):  # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('master')
+
+        route_messages_ttl = settings.ROUTE_MESSAGES_CACHE_TTL_SECONDS
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            r_connection.set(key_name, json.dumps(schedule), ex=route_messages_ttl)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot store route messages in redis: {0}'.
+                                                    format(ex.message))
 
         raise gen.Return(schedule)
 

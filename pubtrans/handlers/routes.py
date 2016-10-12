@@ -1,5 +1,5 @@
 """
-Tornado handler for agencies resource
+Tornado handler for routes resource
 """
 from tornado import gen
 
@@ -10,6 +10,9 @@ from pubtrans.handlers import base_handler
 
 
 class RoutesHandlerV1(base_handler.BaseHandler):
+    """
+    Tornado handler class for routes resource
+    """
 
     @gen.coroutine
     def get(self, agency_tag, route_tag):  # pylint: disable=arguments-differ

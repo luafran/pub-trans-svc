@@ -1,7 +1,5 @@
 Features
 
-Implement NextBus messages command
-Implement unit tests for messages
 Implement NextBus routes vehicles
 Implement unit tests for route vehicles
 Implement NextBus predictions stop id
@@ -16,6 +14,7 @@ COMPLETE: xml attributes to constants in nextbus service
 
 Add verbose option to route detail
 Content negotiation json and xml
+not_running_at filtering is being done in code, could be done in the DB
 
 Circuit breaker in nextbus service
 Fix version in health response

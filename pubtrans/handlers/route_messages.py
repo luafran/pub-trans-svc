@@ -1,5 +1,5 @@
 """
-Tornado handler for route schedule resource
+Tornado handler for route messages resource
 """
 from tornado import gen
 
@@ -8,9 +8,9 @@ from pubtrans.domain import service as svc
 from pubtrans.handlers import base_handler
 
 
-class RouteScheduleHandlerV1(base_handler.BaseHandler):
+class RouteMessagesHandlerV1(base_handler.BaseHandler):
     """
-    Tornado handler class for route schedule resource
+    Tornado handler class for route messages resource
     """
 
     @gen.coroutine
@@ -30,6 +30,6 @@ class RouteScheduleHandlerV1(base_handler.BaseHandler):
 
         service = svc.Service(repository, self.support)
 
-        schedule = yield service.get_route_schedule(agency_tag, route_tag)
+        route_messages = yield service.get_route_messages(agency_tag, route_tag)
 
-        self.build_response(schedule)
+        self.build_response(route_messages)

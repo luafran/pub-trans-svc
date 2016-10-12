@@ -94,17 +94,32 @@ class Service(object):
     @gen.coroutine
     def get_route_schedule(self, agency_tag, route_tag):
 
-        schedule = yield self.get_schedule_from_cache(agency_tag, route_tag)
+        schedule = yield self.get_route_schedule_from_cache(agency_tag, route_tag)
 
         if schedule is None:
             # Use service and cache result
-            self.support.notify_debug('schedule for {0}/{1} not found in cache. Using service'.
+            self.support.notify_debug('schedule for route {0}/{1} not found in cache. Using service'.
                                       format(agency_tag, route_tag))
             nextbus_service = NextBusService(support=self.support)
-            schedule = yield nextbus_service.get_schedule(agency_tag, route_tag)
-            yield self.store_schedule_in_cache(agency_tag, route_tag, schedule)
+            schedule = yield nextbus_service.get_route_schedule(agency_tag, route_tag)
+            yield self.store_route_schedule_in_cache(agency_tag, route_tag, schedule)
 
         raise gen.Return(schedule)
+
+    @gen.coroutine
+    def get_route_messages(self, agency_tag, route_tag):
+
+        messages = yield self.get_route_messages_from_cache(agency_tag, route_tag)
+
+        if messages is None:
+            # Use service and cache result
+            self.support.notify_debug('messages for route {0}/{1} not found in cache. Using service'.
+                                      format(agency_tag, route_tag))
+            nextbus_service = NextBusService(support=self.support)
+            messages = yield nextbus_service.get_route_messages(agency_tag, route_tag)
+            yield self.store_route_messages_in_cache(agency_tag, route_tag, messages)
+
+        raise gen.Return(messages)
 
     @gen.coroutine
     def get_agencies_from_cache(self):
@@ -176,10 +191,10 @@ class Service(object):
                                      format(self.handler_name, ex.message))
 
     @gen.coroutine
-    def get_schedule_from_cache(self, agency_tag, route_tag):
+    def get_route_schedule_from_cache(self, agency_tag, route_tag):
 
         try:
-            routes = yield self.repository.get_schedule(agency_tag, route_tag)
+            routes = yield self.repository.get_route_schedule(agency_tag, route_tag)
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
@@ -189,10 +204,33 @@ class Service(object):
         raise gen.Return(routes)
 
     @gen.coroutine
-    def store_schedule_in_cache(self, agency_tag, route_tag, schedule):
+    def store_route_schedule_in_cache(self, agency_tag, route_tag, schedule):
 
         try:
-            yield self.repository.store_schedule(agency_tag, route_tag, schedule)
+            yield self.repository.store_route_schedule(agency_tag, route_tag, schedule)
+        except exceptions.DatabaseOperationError as ex:
+            # We should work even if cache is not working
+            self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                                     format(self.handler_name, ex.message))
+
+    @gen.coroutine
+    def get_route_messages_from_cache(self, agency_tag, route_tag):
+
+        try:
+            routes = yield self.repository.get_route_messages(agency_tag, route_tag)
+        except exceptions.DatabaseOperationError as ex:
+            # We should work even if cache is not working
+            self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                                     format(self.handler_name, ex.message))
+            routes = None
+
+        raise gen.Return(routes)
+
+    @gen.coroutine
+    def store_route_messages_in_cache(self, agency_tag, route_tag, schedule):
+
+        try:
+            yield self.repository.store_route_messages(agency_tag, route_tag, schedule)
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.

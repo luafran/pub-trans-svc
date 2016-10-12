@@ -29,6 +29,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     COMMAND_ROUTE_CONFIG = 'routeConfig'
     COMMAND_PREDICTIONS = 'predictions'
     COMMAND_SCHEDULE = 'schedule'
+    COMMAND_MESSAGES = 'messages'
 
     ELEMENT_BODY = 'body'
     ELEMENT_AGENCY = 'agency'
@@ -39,6 +40,8 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     ELEMENT_POINT = 'point'
     ELEMENT_HEADER = 'header'
     ELEMENT_TR = 'tr'
+    ELEMENT_MESSAGE = 'message'
+    ELEMENT_TEXT = 'text'
 
     XML_ATTR_TAG = '@tag'
     XML_ATTR_TITLE = '@title'
@@ -52,6 +55,9 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     XML_ATTR_DIRECTION = '@direction'
     XML_ATTR_EPOCH_TIME = '@epochTime'
     XML_ATTR_BLOCK_ID = '@blockID'
+    XML_ATTR_ID = '@id'
+    XML_ATTR_SEND_TO_BUSES = '@sendToBuses'
+    XML_ATTR_PRIORITY = '@priority'
 
     def __init__(self, support=None):
         endpoint = settings.NEXTBUS_SERVICE_URL
@@ -70,7 +76,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     @gen.coroutine
     def get_agencies(self):
         """
-        Get all agencies
+        Get all agencies using NextBus service
         """
 
         query = {
@@ -91,7 +97,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     @gen.coroutine
     def get_routes(self, agency_tag):
         """
-        Get all routes
+        Get all routes using NextBus service
         """
 
         query = {
@@ -113,7 +119,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     @gen.coroutine
     def get_route(self, agency_tag, route_tag):
         """
-        Get single route
+        Get single route using NextBus service
         """
 
         query = {
@@ -130,13 +136,13 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
-        routes = self.build_route(validated_response)
-        raise gen.Return(routes)
+        route = self.build_route(validated_response)
+        raise gen.Return(route)
 
     @gen.coroutine
-    def get_schedule(self, agency_tag, route_tag):
+    def get_route_schedule(self, agency_tag, route_tag):
         """
-        Get route schedule
+        Get route schedule using NextBus service
         """
 
         query = {
@@ -153,8 +159,31 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
-        routes = self.build_schedule(validated_response)
-        raise gen.Return(routes)
+        route_schedule = self.build_schedule(validated_response)
+        raise gen.Return(route_schedule)
+
+    @gen.coroutine
+    def get_route_messages(self, agency_tag, route_tag):
+        """
+        Get route messages using NextBus service
+        """
+
+        query = {
+            self.QUERY_COMMAND: self.COMMAND_MESSAGES,
+            self.QUERY_AGENCY: agency_tag,
+            self.QUERY_ROUTE: route_tag
+        }
+
+        response_code, response_body = \
+            yield self.rest_adapter.get(query=query,
+                                        headers=self.headers,
+                                        timeout=self.timeout)
+
+        self.log_response(self.LOG_TAG, response_code, response_body)
+
+        validated_response = self.validate_response(response_code, response_body, 'xml')
+        route_messages = self.build_route_messages(validated_response)
+        raise gen.Return(route_messages)
 
     def build_agencies_list(self, validated_response):
 
@@ -382,3 +411,32 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
             ])
             header_stops[header_stop[api.TAG_TAG]] = header_stop
         return header_stops
+
+    def build_route_messages(self, validated_response):
+        routes_xml = validated_response.get(self.ELEMENT_BODY).get(self.ELEMENT_ROUTE)
+        if not isinstance(routes_xml, list):
+            routes_xml = [routes_xml]
+
+        messages_all = []
+        messages_route = []
+        for route_xml in routes_xml:
+            route_tag = route_xml.get(self.XML_ATTR_TAG)
+            messages = messages_all if route_tag == 'all' else messages_route
+            messages_xml = route_xml.get(self.ELEMENT_MESSAGE)
+            for message_xml in messages_xml:
+
+                message = OrderedDict([
+                    (api.TAG_ID, message_xml.get(self.XML_ATTR_ID)),
+                    (api.TAG_SEND_TO_BUSES, message_xml.get(self.XML_ATTR_SEND_TO_BUSES)),
+                    (api.TAG_PRIORITY, message_xml.get(self.XML_ATTR_PRIORITY)),
+                    (api.TAG_TEXT, message_xml.get(self.ELEMENT_TEXT))
+                ])
+                messages.append(message)
+
+        route_messages = OrderedDict()
+        if messages_all:
+            route_messages[api.TAG_ALL_MESSAGES] = messages_all
+        if messages_route:
+            route_messages[api.TAG_ROUTE_MESSAGES] = messages_route
+
+        return route_messages

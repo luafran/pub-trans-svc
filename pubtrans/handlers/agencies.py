@@ -10,6 +10,9 @@ from pubtrans.handlers import base_handler
 
 
 class AgenciesHandlerV1(base_handler.BaseHandler):
+    """
+    Tornado handler class for agencies resource
+    """
 
     @gen.coroutine
     def get(self):
