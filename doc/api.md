@@ -154,6 +154,92 @@ $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-mun
 }
 ```
 
+### Get messages for route {E} from agency {sf-muni}
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-muni/routes/E/messages' | python -m json.tool
+{
+    "allMessages": [
+        {
+            "id": "18419",
+            "sendToBuses": "false",
+            "priority": "Low",
+            "text": "We're on Twitter: @sfmta_muni"
+        },
+        ...
+        {
+            "id": "21868",
+            "sendToBuses": "false",
+            "priority": "Low",
+            "text": "Seeing \"registering\"? The system is being upgraded to 3G."
+        }
+    ],
+    "routeMessages": [
+        {
+            "id": "22003",
+            "sendToBuses": "false",
+            "priority": "Normal",
+            "text": "Board E at other \nend of station",
+            "stops": [
+                {
+                    "tag": "5234",
+                    "title": "King St & 2nd St"
+                },
+                {
+                    "tag": "5237",
+                    "title": "King St & 2nd St"
+                }
+            ],
+            "intervals": [
+                {
+                    "startDay": "0",
+                    "startTime": "32400",
+                    "endDay": "0",
+                    "endTime": "68340"
+                },
+                ...
+                {
+                    "startDay": "6",
+                    "startTime": "32400",
+                    "endDay": "6",
+                    "endTime": "68340"
+                }
+            ]
+        },
+        ...
+    ]
+}
+```
+
+### Get vehicles for route {E} from agency {sf-muni} since last time {1476380899035}
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-muni/routes/E/vehicles?lastTime=1476380899035' | python -m json.tool
+{
+    "vehicles": [
+        {
+            "id": "1009",
+            "dirTag": "E____O_F00",
+            "lat": "37.80753",
+            "lon": "-122.41732",
+            "secsSinceReport": "62",
+            "predictable": "true",
+            "heading": "218",
+            "SpeedKmHr": "0"
+        },
+        {
+            "id": "1007",
+            "dirTag": "E____I_F00",
+            "lat": "37.77587",
+            "lon": "-122.39455",
+            "secsSinceReport": "27",
+            "predictable": "true",
+            "heading": "45",
+            "SpeedKmHr": "20"
+        }
+    ],
+    "lastTime": "1476380934095"
+}
+```
+
 ## Operations and Support Endpoints
 
 ### Send a request to service health
