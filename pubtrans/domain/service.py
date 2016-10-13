@@ -122,6 +122,21 @@ class Service(object):
         raise gen.Return(messages)
 
     @gen.coroutine
+    def get_route_vehicles(self, agency_tag, route_tag, last_time):
+
+        vehicles = yield self.get_route_vehicles_from_cache(agency_tag, route_tag)
+
+        if vehicles is None:
+            # Use service and cache result
+            self.support.notify_debug('vehicles for route {0}/{1} not found in cache. Using service'.
+                                      format(agency_tag, route_tag))
+            nextbus_service = NextBusService(support=self.support)
+            vehicles = yield nextbus_service.get_route_vehicles(agency_tag, route_tag, last_time)
+            yield self.store_route_vehicles_in_cache(agency_tag, route_tag, vehicles)
+
+        raise gen.Return(vehicles)
+
+    @gen.coroutine
     def get_agencies_from_cache(self):
 
         try:
@@ -217,20 +232,43 @@ class Service(object):
     def get_route_messages_from_cache(self, agency_tag, route_tag):
 
         try:
-            routes = yield self.repository.get_route_messages(agency_tag, route_tag)
+            messages = yield self.repository.get_route_messages(agency_tag, route_tag)
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
                                      format('Service', ex.message))
-            routes = None
+            messages = None
 
-        raise gen.Return(routes)
+        raise gen.Return(messages)
 
     @gen.coroutine
-    def store_route_messages_in_cache(self, agency_tag, route_tag, schedule):
+    def store_route_messages_in_cache(self, agency_tag, route_tag, messages):
 
         try:
-            yield self.repository.store_route_messages(agency_tag, route_tag, schedule)
+            yield self.repository.store_route_messages(agency_tag, route_tag, messages)
+        except exceptions.DatabaseOperationError as ex:
+            # We should work even if cache is not working
+            self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                                     format('Service', ex.message))
+
+    @gen.coroutine
+    def get_route_vehicles_from_cache(self, agency_tag, route_tag):
+
+        try:
+            vehicles = yield self.repository.get_route_vehicles(agency_tag, route_tag)
+        except exceptions.DatabaseOperationError as ex:
+            # We should work even if cache is not working
+            self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.
+                                     format('Service', ex.message))
+            vehicles = None
+
+        raise gen.Return(vehicles)
+
+    @gen.coroutine
+    def store_route_vehicles_in_cache(self, agency_tag, route_tag, vehicles):
+
+        try:
+            yield self.repository.store_route_vehicles(agency_tag, route_tag, vehicles)
         except exceptions.DatabaseOperationError as ex:
             # We should work even if cache is not working
             self.support.notify_info('[{0}] Not using cache. Cache not available: {1}'.

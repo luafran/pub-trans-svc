@@ -1,12 +1,11 @@
 Features
 
-Implement NextBus routes vehicles
-Implement unit tests for route vehicles
 Implement NextBus predictions stop id
 Implement NextBus predictions stop id, route tag
 Implement NextBus predictions route tag, stop tag
 Implement NextBus predictions for multiple stops
 Implement NextBus unit tests for predictions
+
 Implement small unit tests for /stats
 
 Fix expected response in test route schedule
@@ -16,6 +15,7 @@ Add verbose option to route detail
 Content negotiation json and xml
 not_running_at filtering is being done in code, could be done in the DB
 
+Move stats storage to redis repo
 Circuit breaker in nextbus service
 Fix version in health response
 Config using environment variables

@@ -13,6 +13,7 @@ from pubtrans.handlers import agencies
 from pubtrans.handlers import routes
 from pubtrans.handlers import route_schedule
 from pubtrans.handlers import route_messages
+from pubtrans.handlers import route_vehicles
 from pubtrans.handlers import stats
 from pubtrans.repositories import redis_repository
 
@@ -39,7 +40,9 @@ def make_app():
             (r'.*/v1/([^/]*)/routes/?([^/]*)/schedule$', route_schedule.RouteScheduleHandlerV1,
              {'application_settings': settings, 'handler_name': 'RouteScheduleHandlerV1'}),
             (r'.*/v1/([^/]*)/routes/?([^/]*)/messages$', route_messages.RouteMessagesHandlerV1,
-             {'application_settings': settings, 'handler_name': 'RouteScheduleHandlerV1'}),
+             {'application_settings': settings, 'handler_name': 'RouteMessagesHandlerV1'}),
+            (r'.*/v1/([^/]*)/routes/?([^/]*)/vehicles$', route_vehicles.RouteVehiclesHandlerV1,
+             {'application_settings': settings, 'handler_name': 'RouteVehiclesHandlerV1'}),
             (r'.*/v1/stats/?([^/]*)$', stats.StatsHandlerV1,
              {'application_settings': settings, 'handler_name': 'StatsHandlerV1'}),
             (r'.*/v1/health/?$', health.HealthHandlerV1,

@@ -20,7 +20,7 @@ class TestRouteMessages(testing.AsyncHTTPTestCase):
     def get_new_ioloop(self):
         return ioloop.IOLoop.instance()
 
-    def test_get_schedule(self):
+    def test_get_messages(self):
         request = HTTPRequest(
             self.get_url('/v1/sf-muni/routes/E/messages'),
             method='GET'

@@ -8,7 +8,6 @@ import redis
 import statsd
 
 from pubtrans.common import constants
-from pubtrans.common import exceptions
 from pubtrans.config import settings
 
 

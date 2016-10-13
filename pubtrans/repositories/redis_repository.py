@@ -180,19 +180,55 @@ class RedisRepository(object):
         raise gen.Return(messages)
 
     @gen.coroutine
-    def store_route_messages(self, agency_tag, route_tag, schedule):  # pylint: disable=no-self-use
+    def store_route_messages(self, agency_tag, route_tag, messages):  # pylint: disable=no-self-use
 
         r_connection = self.get_redis_connection('master')
 
         route_messages_ttl = settings.ROUTE_MESSAGES_CACHE_TTL_SECONDS
         try:
             key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
-            r_connection.set(key_name, json.dumps(schedule), ex=route_messages_ttl)
+            r_connection.set(key_name, json.dumps(messages), ex=route_messages_ttl)
         except redis.ConnectionError as ex:
             raise exceptions.DatabaseOperationError('Cannot store route messages in redis: {0}'.
                                                     format(ex.message))
 
-        raise gen.Return(schedule)
+        raise gen.Return(messages)
+
+    @gen.coroutine
+    def get_route_vehicles(self, agency_tag, route_tag):  # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('slave')
+
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            data = r_connection.get(key_name)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot get route vehicles from redis: {0}'.
+                                                    format(ex.message))
+        if data is None:
+            vehicles = None
+        else:
+            try:
+                vehicles = json.loads(data)
+            except TypeError:
+                raise exceptions.DatabaseOperationError('Invalid format for route vehicles')
+
+        raise gen.Return(vehicles)
+
+    @gen.coroutine
+    def store_route_vehicles(self, agency_tag, route_tag, vehicles):  # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('master')
+
+        route_messages_ttl = settings.ROUTE_MESSAGES_CACHE_TTL_SECONDS
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            r_connection.set(key_name, json.dumps(vehicles), ex=route_messages_ttl)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot store route vehicles in redis: {0}'.
+                                                    format(ex.message))
+
+        raise gen.Return(vehicles)
 
     @staticmethod
     def get_redis_connection(role):

@@ -185,7 +185,7 @@ class TestRouteScheduleHandlerV1(testing.AsyncHTTPTestCase):
             raise gen.Return(schedule)
 
         @gen.coroutine
-        def store_item(items):  # pylint: disable=unused-argument
+        def store_item(agency_tag, route_tag, schedule):  # pylint: disable=unused-argument
             raise gen.Return(None)
 
         with mock.patch.object(RestAdapter, 'get') as mocked_rest_adapter:
