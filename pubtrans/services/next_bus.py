@@ -1,6 +1,7 @@
 """
 Connector to NextBus Service
 """
+import re
 import sys
 from collections import OrderedDict
 from tornado import gen
@@ -48,6 +49,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
     ELEMENT_INTERVAL = 'interval'
     ELEMENT_VEHICLE = 'vehicle'
     ELEMENT_LAST_TIME = 'lastTime'
+    ELEMENT_ERROR = 'Error'
 
     XML_ATTR_TAG = '@tag'
     XML_ATTR_TITLE = '@title'
@@ -107,6 +109,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         agencies = self.build_agencies_list(validated_response)
         raise gen.Return(agencies)
 
@@ -129,6 +132,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         routes = self.build_routes_list(validated_response)
         raise gen.Return(routes)
 
@@ -152,6 +156,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         route = self.build_route(validated_response)
         raise gen.Return(route)
 
@@ -175,6 +180,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         route_schedule = self.build_schedule(validated_response)
         raise gen.Return(route_schedule)
 
@@ -198,6 +204,7 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         route_messages = self.build_route_messages(validated_response)
         raise gen.Return(route_messages)
 
@@ -222,8 +229,18 @@ class NextBusService(base.BaseService):  # pylint: disable=R0903
         self.log_response(self.LOG_TAG, response_code, response_body)
 
         validated_response = self.validate_response(response_code, response_body, 'xml')
+        self.handle_error(validated_response)
         route_messages = self.build_route_vehicles(validated_response)
         raise gen.Return(route_messages)
+
+    def handle_error(self, validated_response):
+        error = validated_response.get(self.ELEMENT_BODY).get(self.ELEMENT_ERROR)
+        if error:
+            text = error.get('#text')
+            if 'Could not get route' in text or re.search('route r=.* is (not valid|invalid)', text):
+                raise exceptions.NotFound(text)
+            else:
+                raise exceptions.BadRequest(text)
 
     def build_agencies_list(self, validated_response):
 
