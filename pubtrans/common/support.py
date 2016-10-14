@@ -2,6 +2,7 @@
 Generic (domain agnostic) stuff to support application
 """
 import Queue
+from _socket import gaierror
 from collections import OrderedDict
 
 import redis
@@ -40,13 +41,17 @@ class Support(object):
             'details': ''
         }
 
-        self._stats_enabled = settings.STATS_ENABLED
-
-        if self._stats_enabled:
-            self._stats_client = statsd.StatsClient(host=settings.STATS_SERVICE_HOSTNAME,
-                                                    port=8125, prefix='pubtrans.' + environment)
         self._messages_queue = Queue.Queue()
         self.log_entire_request = settings.LOG_LEVEL in ['CRITICAL', 'ERROR']
+
+        self._stats_enabled = settings.STATS_ENABLED
+        if self._stats_enabled:
+            try:
+                self._stats_client = statsd.StatsClient(host=settings.STATS_SERVICE_HOSTNAME,
+                                                        port=8125, prefix='pubtrans.' + environment)
+            except gaierror as ex:
+                self.notify_warning('Could not create stats client: {0}'. format(ex.strerror))
+                self._stats_enabled = False
 
     def _log_entire_request(self, log_method):
         try:

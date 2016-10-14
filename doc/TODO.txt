@@ -9,12 +9,12 @@ not_running_at filtering is being done in code, could be done in the DB
 
 port arg
 Move stats storage to redis repo?
-Refactor Service class
+Refactor Agency class
 Circuit breaker in nextbus service
 Fix version in health response
 Config using environment variables
 Centralize logs (ELK for example)
-Metrics: statsd + influxDB
+
 
 Design
 

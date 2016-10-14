@@ -12,7 +12,7 @@ ADD requirements.txt ${INSTALL_DIR}/requirements.txt
 RUN pip install -Ur ${INSTALL_DIR}/requirements.txt
 
 # Expose port
-EXPOSE 80
+EXPOSE 8888
 
 # Run app
-CMD python ${INSTALL_DIR}/application.py --port 80
+CMD python ${INSTALL_DIR}/application.py --port 8888

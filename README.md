@@ -4,8 +4,9 @@ Web service that extend and wrap NextBus public XML feed as a RESTful HTTP API
 ### Software Stack
 
 * Python 2.7
-* Tornado Web Server [Site](http://www.tornadoweb.org/en/stable/)
+* Tornado Web Server
 * Redis
+* Metrics: Statsd client, Telegraf, InfluxDB and Grafana
 * Docker and Docker Compose
 
 ### Other tools
@@ -102,21 +103,7 @@ $ minikube start
 #### Deploy service
 
 ```shell
-$ kubectl create -f deploy/k8s/pubtrans-all.yaml
-$ kubectl get deployments
-NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-pubtrans   2         2         2            2           3m
-$ kubectl get rs
-NAME                 DESIRED   CURRENT   AGE
-pubtrans-636011768   2         2         5m
-$ kubectl get services
-NAME         CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
-kubernetes   10.0.0.1     <none>        443/TCP    4h
-pubtrans     10.0.0.72    <nodes>       8888/TCP   3m
-$ kubectl get pods --show-labels
-NAME                       READY     STATUS    RESTARTS   AGE       LABELS
-pubtrans-636011768-fzpn9   1/1       Running   0          46s       app=pubtrans,pod-template-hash=636011768
-pubtrans-636011768-xk8m4   1/1       Running   0          46s       app=pubtrans,pod-template-hash=636011768
+$ kubectl create -f deploy/k8s
 ```
 
 #### Use service
