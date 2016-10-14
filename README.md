@@ -116,11 +116,5 @@ $ curl http://192.168.99.100:32395/health
 
 #### Delete resources
 ```shell
-$ kubectl delete -f deploy/k8s/pubtrans-all.yaml
-service "redis-master" deleted
-deployment "redis-master" deleted
-service "redis-slave" deleted
-deployment "redis-slave" deleted
-service "pubtrans" deleted
-deployment "pubtrans" deleted
+$ kubectl delete -f deploy/k8s
 ```
