@@ -49,9 +49,7 @@ class RoutesHandlerV1(base_handler.BaseHandler):
         fields = self.get_query_argument(api.QUERY_FIELDS, None)
         fields = fields.split(',') if fields else []
 
-        repository = self.application_settings.repository
-
-        agency_obj = agency.Agency(agency_tag, repository, self.support)
+        agency_obj = agency.Agency(agency_tag, self.application_settings)
 
         if route_tag:
             route = yield agency_obj.get_route(route_tag, fields)

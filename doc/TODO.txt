@@ -1,16 +1,12 @@
 Features
 
+Content negotiation json and xml
 Implement small unit tests for /stats
 Fix expected response in test route schedule
-
 Add verbose option to route detail
-Content negotiation json and xml
 not_running_at filtering is being done in code, could be done in the DB
-
-port arg
 Move stats storage to redis repo?
-Refactor Agency class
-Circuit breaker in nextbus service
+Refactor Agency class and move some stuff to Route class
 Fix version in health response
 Config using environment variables
 Centralize logs (ELK for example)

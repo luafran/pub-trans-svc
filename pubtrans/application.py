@@ -2,10 +2,14 @@
 Service main function
 Tornado application and URL mappings
 """
+import logging
 import signal
+import time
 import tornado.ioloop
 import tornado.web
 
+from pubtrans.common import breaker
+from pubtrans.common import exceptions
 from pubtrans.config import settings
 from pubtrans.handlers import default_handler
 from pubtrans.handlers import health
@@ -31,6 +35,12 @@ def sig_handler(sig, frame):  # pylint: disable=unused-argument
 def make_app():
 
     settings.repository = redis_repository.RedisRepository(None)
+
+    circuit_breaker = breaker.CircuitBreakerSet(time.time, logging.getLogger('circuit-breaker'))
+    circuit_breaker.handle_errors([exceptions.ExternalProviderUnavailableTemporarily,
+                                   exceptions.ExternalProviderUnavailablePermanently])
+
+    settings.circuit_breaker_set = circuit_breaker
 
     _the_app = tornado.web.Application(
         [

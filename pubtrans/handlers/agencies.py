@@ -17,9 +17,9 @@ class AgenciesHandlerV1(base_handler.BaseHandler):
     @gen.coroutine
     def get(self):
 
-        repository = self.application_settings.repository
+        # repository = self.application_settings.repository
 
-        service = svc.Service(repository, self.support)
+        service = svc.Service(self.application_settings)
         agencies = yield service.get_agencies()
 
         response = {

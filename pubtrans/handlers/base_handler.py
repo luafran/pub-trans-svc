@@ -68,6 +68,9 @@ class BaseHandler(tornado.web.RequestHandler):
         }
         self.support = Support(logger, extra_info)
 
+        if self.application_settings:
+            self.application_settings.support = self.support
+
     def prepare(self):
         """
         Called at the beginning of a request before get/post/etc.

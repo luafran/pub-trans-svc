@@ -34,9 +34,7 @@ class RouteVehiclesHandlerV1(base_handler.BaseHandler):
             self.build_response(error_response3)
             return
 
-        repository = self.application_settings.repository
-
-        agency_obj = agency.Agency(agency_tag, repository, self.support)
+        agency_obj = agency.Agency(agency_tag, self.application_settings)
 
         route_messages = yield agency_obj.get_route_vehicles(agency_tag, route_tag, last_time)
 
