@@ -10,6 +10,7 @@ from pubtrans.config import settings
 from pubtrans.handlers import default_handler
 from pubtrans.handlers import health
 from pubtrans.handlers import agencies
+from pubtrans.handlers import route_predictions
 from pubtrans.handlers import routes
 from pubtrans.handlers import route_schedule
 from pubtrans.handlers import route_messages
@@ -41,6 +42,8 @@ def make_app():
              {'application_settings': settings, 'handler_name': 'RouteScheduleHandlerV1'}),
             (r'.*/v1/([^/]*)/routes/?([^/]*)/messages$', route_messages.RouteMessagesHandlerV1,
              {'application_settings': settings, 'handler_name': 'RouteMessagesHandlerV1'}),
+            (r'.*/v1/([^/]*)/routes/?([^/]*)/predictions$', route_predictions.RoutePredictionsHandlerV1,
+             {'application_settings': settings, 'handler_name': 'RoutePredictionsHandlerV1'}),
             (r'.*/v1/([^/]*)/routes/?([^/]*)/vehicles$', route_vehicles.RouteVehiclesHandlerV1,
              {'application_settings': settings, 'handler_name': 'RouteVehiclesHandlerV1'}),
             (r'.*/v1/stats/?([^/]*)$', stats.StatsHandlerV1,

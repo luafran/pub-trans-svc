@@ -154,6 +154,12 @@ $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-mun
 }
 ```
 
+### Get predictions for route {E} from agency {sf-muni} and stop tag {}
+```shell
+$ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-muni/routes/E/predictions?stopTag=4502' | python -m json.tool
+{}
+```
+
 ### Get messages for route {E} from agency {sf-muni}
 ```shell
 $ curl --proxy '' -H 'Accept: application/json' 'http://localhost:8888/v1/sf-muni/routes/E/messages' | python -m json.tool

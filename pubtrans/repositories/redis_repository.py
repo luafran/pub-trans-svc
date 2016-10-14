@@ -14,6 +14,8 @@ KEY_ROUTE = 'route'
 KEY_ROUTES = 'routes'
 KEY_ROUTE_SCHEDULE = 'route_schedule'
 KEY_ROUTE_MESSAGES = 'route_messages'
+KEY_ROUTE_VEHICLES = 'route_vehicles'
+KEY_ROUTE_PREDICTIONS = 'route_predictions'
 
 
 class RedisRepository(object):
@@ -200,7 +202,7 @@ class RedisRepository(object):
         r_connection = self.get_redis_connection('slave')
 
         try:
-            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            key_name = agency_tag + ':' + KEY_ROUTE_VEHICLES + ':' + route_tag
             data = r_connection.get(key_name)
         except redis.ConnectionError as ex:
             raise exceptions.DatabaseOperationError('Cannot get route vehicles from redis: {0}'.
@@ -220,15 +222,52 @@ class RedisRepository(object):
 
         r_connection = self.get_redis_connection('master')
 
-        route_messages_ttl = settings.ROUTE_MESSAGES_CACHE_TTL_SECONDS
+        route_messages_ttl = settings.ROUTE_VEHICLES_CACHE_TTL_SECONDS
         try:
-            key_name = agency_tag + ':' + KEY_ROUTE_MESSAGES + ':' + route_tag
+            key_name = agency_tag + ':' + KEY_ROUTE_VEHICLES + ':' + route_tag
             r_connection.set(key_name, json.dumps(vehicles), ex=route_messages_ttl)
         except redis.ConnectionError as ex:
             raise exceptions.DatabaseOperationError('Cannot store route vehicles in redis: {0}'.
                                                     format(ex.message))
 
         raise gen.Return(vehicles)
+
+    @gen.coroutine
+    def get_route_predictions(self, agency_tag, route_tag, stop_tag):  # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('slave')
+
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_PREDICTIONS + ':' + route_tag + ':' + stop_tag
+            data = r_connection.get(key_name)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot get route predictions from redis: {0}'.
+                                                    format(ex.message))
+        if data is None:
+            predictions = None
+        else:
+            try:
+                predictions = json.loads(data)
+            except TypeError:
+                raise exceptions.DatabaseOperationError('Invalid format for route predictions')
+
+        raise gen.Return(predictions)
+
+    @gen.coroutine
+    def store_route_predictions(self, agency_tag, route_tag, stop_tag, predictions):
+        # pylint: disable=no-self-use
+
+        r_connection = self.get_redis_connection('master')
+
+        route_messages_ttl = settings.ROUTE_PREDICTIONS_CACHE_TTL_SECONDS
+        try:
+            key_name = agency_tag + ':' + KEY_ROUTE_PREDICTIONS + ':' + route_tag + ':' + stop_tag
+            r_connection.set(key_name, json.dumps(predictions), ex=route_messages_ttl)
+        except redis.ConnectionError as ex:
+            raise exceptions.DatabaseOperationError('Cannot store route predictions in redis: {0}'.
+                                                    format(ex.message))
+
+        raise gen.Return(predictions)
 
     @staticmethod
     def get_redis_connection(role):

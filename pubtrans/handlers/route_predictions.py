@@ -4,12 +4,12 @@ Tornado handler for route messages resource
 from tornado import gen
 
 from pubtrans.common import exceptions
-from pubtrans.domain import api
 from pubtrans.domain import agency
+from pubtrans.domain import api
 from pubtrans.handlers import base_handler
 
 
-class RouteVehiclesHandlerV1(base_handler.BaseHandler):
+class RoutePredictionsHandlerV1(base_handler.BaseHandler):
     """
     Tornado handler class for route messages resource
     """
@@ -27,10 +27,10 @@ class RouteVehiclesHandlerV1(base_handler.BaseHandler):
             self.build_response(error_response2)
             return
 
-        last_time = self.get_query_argument(api.QUERY_LAST_TIME, None)
-        if not last_time:
+        stop_tag = self.get_query_argument(api.QUERY_STOP_TAG, None)
+        if not stop_tag:
             error_response3 = exceptions.MissingArgumentValue('Missing argument {0}'.
-                                                              format(api.QUERY_LAST_TIME))
+                                                              format(api.QUERY_STOP_TAG))
             self.build_response(error_response3)
             return
 
@@ -38,6 +38,6 @@ class RouteVehiclesHandlerV1(base_handler.BaseHandler):
 
         agency_obj = agency.Agency(agency_tag, repository, self.support)
 
-        route_messages = yield agency_obj.get_route_vehicles(agency_tag, route_tag, last_time)
+        route_messages = yield agency_obj.get_route_predictions(agency_tag, route_tag, stop_tag)
 
         self.build_response(route_messages)

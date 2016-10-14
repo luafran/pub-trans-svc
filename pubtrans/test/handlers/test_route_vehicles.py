@@ -80,7 +80,7 @@ class TestRouteVehiclesHandlerV1(testing.AsyncHTTPTestCase):
 
     @mock.patch.object(RedisRepository, "store_route_vehicles")
     @mock.patch.object(RedisRepository, "get_route_vehicles")
-    def test_schedule_not_in_cache(self, mocked_repo_get, mocked_repo_store):
+    def test_vehicles_not_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
         def get_success(path=None, body=None, query=None,
@@ -135,7 +135,7 @@ class TestRouteVehiclesHandlerV1(testing.AsyncHTTPTestCase):
 
     @mock.patch.object(RedisRepository, "store_route_vehicles")
     @mock.patch.object(RedisRepository, "get_route_vehicles")
-    def test_schedule_in_cache(self, mocked_repo_get, mocked_repo_store):
+    def test_vehicles_in_cache(self, mocked_repo_get, mocked_repo_store):
 
         @gen.coroutine
         def get_success(path=None, body=None, query=None,

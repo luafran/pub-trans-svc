@@ -4,7 +4,7 @@ Tornado handler for route schedule resource
 from tornado import gen
 
 from pubtrans.common import exceptions
-from pubtrans.domain import service as svc
+from pubtrans.domain import agency
 from pubtrans.handlers import base_handler
 
 
@@ -28,8 +28,8 @@ class RouteScheduleHandlerV1(base_handler.BaseHandler):
 
         repository = self.application_settings.repository
 
-        service = svc.Service(repository, self.support)
+        agency_obj = agency.Agency(agency_tag, repository, self.support)
 
-        schedule = yield service.get_route_schedule(agency_tag, route_tag)
+        schedule = yield agency_obj.get_route_schedule(agency_tag, route_tag)
 
         self.build_response(schedule)

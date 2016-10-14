@@ -37,7 +37,7 @@ class TestRoutes(testing.AsyncHTTPTestCase):
         self.assertIsNotNone(routes[0].get(api.TAG_TAG))
         self.assertIsNotNone(routes[0].get(api.TAG_TITLE))
 
-    def test_get_a_single_routes(self):
+    def test_get_a_single_route(self):
         request = HTTPRequest(
             self.get_url('/v1/sf-muni/routes/E'),
             method='GET'
